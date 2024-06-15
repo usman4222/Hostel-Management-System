@@ -8,6 +8,7 @@ import { RiMoneyDollarCircleLine } from "react-icons/ri";
 import { BiMoneyWithdraw } from "react-icons/bi";
 import { TbMoneybag } from "react-icons/tb";
 import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../../firebase';
 
 function Dash() {
 
