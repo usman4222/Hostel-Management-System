@@ -1,5 +1,0 @@
-export const ALL_USERS_REQUEST = "ALL_USERS_REQUEST" 
-export const ALL_USERS_SUCCESS = "ALL_USERS_SUCCESS" 
-export const ALL_USERS_FAIL = "ALL_USERS_FAIL"
-
-export const CLEAR_ERRORS = "CLEAR_ERRORS" 

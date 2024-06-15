@@ -2,54 +2,77 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Breadcrumb from './components/Breadcrumbs/Breadcrumb';
 import LogoDark from './images/logo/logo-dark.svg';
-import Logo from './images/logo/sorr.png';
-import UnAuthLayout from './layout/UnAuthLayout';
+// import UnAuthLayout from './layout/UnAuthLayout';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSnackbar } from 'notistack';
-import { CLEAR_ERRORS } from './constants/userConstant';
-import { login } from './actions/userAction';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { db } from './firebase';
 
 const Signin = () => {
 
     const dispatch = useDispatch()
     const { enqueueSnackbar } = useSnackbar();
-    const { error, isAuthenticated } = useSelector((state) => state.user)
+    const { isAuthenticated } = useSelector((state) => state.user)
     const navigate = useNavigate();
     const [loignEmail, setLoginEmail] = useState("")
     const [loignPassword, setLoginPassword] = useState("")
     const loginTab = useRef(null)
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
 
-    const loginSubmit = (e) => {
-        e.preventDefault()
-        dispatch(login(loignEmail, loignPassword))
-    }
+    const loginSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
 
+        try {
+            console.log("Email:", email);
+            console.log("Password:", password);
+            const q = query(collection(db, 'admin'), where('email', '==', email), where('password', '==', password));
+            const querySnapshot = await getDocs(q);
 
-    useEffect(() => {
-        if (error) {
-            enqueueSnackbar(error, { variant: 'error' });
-            dispatch({ type: 'CLEAR_ERRORS' });
+            if (!querySnapshot.empty) {
+                console.log("doc", querySnapshot.docs);
+                const doc = querySnapshot.docs[0];
+                console.log(doc);
+                const userId = doc.id;
+                localStorage.setItem('adminId', userId);
+                navigate('/');
+            } else {
+                setError('Invalid email or pin.');
+            }
+        } catch (error) {
+            console.error('Error verifying user:', error);
+            setError('Error verifying user. Please try again later.');
         }
-        if (isAuthenticated) {
-            enqueueSnackbar('Successfully Logged In', { variant: 'success' });
-            navigate("/");
-        }
-    }, [dispatch, error, isAuthenticated, navigate, enqueueSnackbar]);
+    };
+
+
+    // useEffect(() => {
+    //     if (error) {
+    //         enqueueSnackbar(error, { variant: 'error' });
+    //         dispatch({ type: 'CLEAR_ERRORS' });
+    //     }
+    //     if (isAuthenticated) {
+    //         enqueueSnackbar('Successfully Logged In', { variant: 'success' });
+    //         navigate("/");
+    //     }
+    // }, [dispatch, error, isAuthenticated, navigate, enqueueSnackbar]);
 
 
     return (
-        <UnAuthLayout>
+        // <UnAuthLayout>
             <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
                 <div className="flex flex-wrap items-center">
                     <div className="hidden w-full xl:block xl:w-1/2">
                         <div className="py-17.5 px-26 text-center">
                             <Link className="mb-5.5 inline-block" to="/sign-in">
                                 {/* <img className="hidden dark:block w-40" src={Logo} alt="Logo" /> */}
-                                <img className="dark:hidden w-40" src={Logo} alt="Logo" />
+                                <img className="dark:hidden w-20" src="https://res.cloudinary.com/glide/image/fetch/f_auto,h_150,c_limit/https%3A%2F%2Ffirebasestorage.googleapis.com%2Fv0%2Fb%2Fglide-prod.appspot.com%2Fo%2Ficon-images%252Fanonymous-b8b74b04-83a5-46d6-a2cc-25e0559d33df.png%3Falt%3Dmedia%26token%3D633ff17b-72a8-49f5-8f96-a06e64af4679" alt="Logo" />
                             </Link>
 
                             <p className="2xl:px-20">
-                                Welcome to our office management system. Streamline your workday with efficiency and ease.
+                                Welcome to CoinMath.
                             </p>
 
                             <span className="mt-15 inline-block">
@@ -180,7 +203,7 @@ const Signin = () => {
                     <div className="w-full border-stroke dark:border-strokedark xl:w-1/2 xl:border-l-2">
                         <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
                             <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
-                                Sign In to SMS
+                                Sign In to Coin Math
                             </h2>
 
                             <form ref={loginTab} onSubmit={loginSubmit}>
@@ -192,9 +215,9 @@ const Signin = () => {
                                         <input
                                             type='email'
                                             placeholder='Enter you email'
-                                            value={loignEmail}
+                                            value={email}
                                             required
-                                            onChange={(e) => setLoginEmail(e.target.value)}
+                                            onChange={(e) => setEmail(e.target.value)}
                                             className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                         />
 
@@ -226,9 +249,9 @@ const Signin = () => {
                                         <input
                                             type='password'
                                             placeholder='Enter your password'
-                                            value={loignPassword}
+                                            value={password}
                                             required
-                                            onChange={(e) => setLoginPassword(e.target.value)}
+                                            onChange={(e) => setPassword(e.target.value)}
                                             className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                         />
 
@@ -255,7 +278,7 @@ const Signin = () => {
                                         </span>
                                     </div>
                                 </div>
-
+                                {error && <p className='text-red-500 text-center mt-2'>{error}</p>}
                                 <div className="mb-5">
                                     <input
                                         type="submit"
@@ -269,7 +292,7 @@ const Signin = () => {
                     </div>
                 </div>
             </div>
-        </UnAuthLayout>
+        // </UnAuthLayout>
     );
 };
 

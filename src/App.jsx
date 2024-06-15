@@ -4,46 +4,24 @@ import Dash from './pages/Dashboard/Dash'
 import Signin from './Signin'
 import ProtectedRoute from './ProtectedRoute';
 import { useSelector } from 'react-redux';
-import AddEmployee from './components/EmployeeForm/AddEmployee';
 import AllEmployees from './components/EmployeesTable/AllEmployees';
-import UpdateEmployee from './components/EmployeeForm/UpdateEmployee';
-import EmployeeAttendanceTable from './components/EmployeesTable/EmployeeAttendanceTable';
-import AttendanceMarkerForm from './components/EmployeeForm/AttendanceMarkerForm';
-import AttendanceDetailsTable from './components/EmployeesTable/AttendanceDetailsTable';
-import CurrentMonthAttendanceList from './components/EmployeesTable/CurrentMonthAttendanceList';
-import AttendanceSearchTable from './components/EmployeesTable/AttendanceSearchTable';
-import AddExpenseForm from './components/ExpenseForm/AddExpenseForm';
-import ExpenseTable from './components/ExpenseTable/ExpenseTable';
-import FilterExpense from './components/ExpenseTable/FilterExpense';
-import AddRevenueForm from './components/RevenueForm/AddRevenueForm';
-import RevenueTable from './components/RevenueTable/RevenueTable';
-import FilterRevenue from './components/RevenueTable/FilterRevenue';
 import NotFound from './pages/NotFound';
+import Profile from './pages/Profile';
+import ReferralDetails from './components/Cards/ReferralDetails';
 
 function App() {
-  const { isAuthenticated } = useSelector((state) => state.user)
 
-  const user = isAuthenticated
+  const adminId = "adminId"; // Assuming this is the key in localStorage
+  const user = localStorage.getItem(adminId);
 
   return (
     <BrowserRouter>
       <Routes>
         <Route element={<ProtectedRoute user={user} />}>
           <Route path='/' element={<Dash />} />
-          <Route path='/addemployee' element={<AddEmployee />} />
           <Route path='/allemployees' element={<AllEmployees />} />
-          <Route path='/update-employee/:id' element={<UpdateEmployee />} />
-          <Route path='/employee-attendance' element={<EmployeeAttendanceTable />} />
-          <Route path='/attendance/:id' element={<AttendanceMarkerForm />} />
-          <Route path='/attendance/view/:id' element={<AttendanceDetailsTable />} />
-          <Route path='/attendancelist/:id' element={<CurrentMonthAttendanceList />} />
-          <Route path='/searchattendance/:id' element={<AttendanceSearchTable />} />
-          <Route path='/addexpense' element={<AddExpenseForm />} />
-          <Route path='/allexpenses' element={<ExpenseTable />} />
-          <Route path='/searchexpense' element={<FilterExpense />} />
-          <Route path='/addrevenue' element={<AddRevenueForm />} />
-          <Route path='/allrevenue' element={<RevenueTable />} />
-          <Route path='/searchrevenue' element={<FilterRevenue />} />
+          <Route path='/profile/:id' element={<Profile />} />
+          <Route path='/referrals' element={<ReferralDetails />} />
           <Route path='*' element={<NotFound />} />
         </Route>
         <Route element={<Signin />} path="/sign-in" />

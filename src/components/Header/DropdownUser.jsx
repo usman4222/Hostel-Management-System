@@ -3,21 +3,18 @@ import { Link, useNavigate } from 'react-router-dom';
 import UserOne from '../../images/logo/sor.png';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSnackbar } from 'notistack';
-import { logout } from '../../actions/userAction';
 
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const { user } = useSelector((state) => state.user)
 
   // console.log("this is user", user);
 
   // const role = user.role
   const { enqueueSnackbar } = useSnackbar();
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   function logoutUser() {
-    dispatch(logout());
+    localStorage.removeItem('adminId');
     enqueueSnackbar('Logout Successfully...!', { variant: 'success' });
     navigate('/sign-in');
 
@@ -61,11 +58,11 @@ const DropdownUser = () => {
           <span className="block text-sm font-medium text-black dark:text-white">
             {/* {user && user.role} */}
           </span>
-          <span className="block text-xs">Soriic</span>
+          <span className="block text-xs">Coin Math</span>
         </span>
 
         <span className="h-10 w-10 flex justify-center items-center rounded-full">
-          <img src={UserOne} alt="User" className='rounded-full' />
+          <img src="https://res.cloudinary.com/glide/image/fetch/f_auto,h_150,c_limit/https%3A%2F%2Ffirebasestorage.googleapis.com%2Fv0%2Fb%2Fglide-prod.appspot.com%2Fo%2Ficon-images%252Fanonymous-b8b74b04-83a5-46d6-a2cc-25e0559d33df.png%3Falt%3Dmedia%26token%3D633ff17b-72a8-49f5-8f96-a06e64af4679" alt="User" className='rounded-full w-8' />
         </span>
 
         <svg

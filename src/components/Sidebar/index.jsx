@@ -68,7 +68,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
       {/* <!-- SIDEBAR HEADER --> */}
       <div className="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
         <NavLink to="/">
-          <img className='w-40' src={Logo} alt="Logo" />
+          <img className='w-20 rounded-full' src="https://res.cloudinary.com/glide/image/fetch/f_auto,h_150,c_limit/https%3A%2F%2Ffirebasestorage.googleapis.com%2Fv0%2Fb%2Fglide-prod.appspot.com%2Fo%2Ficon-images%252Fanonymous-b8b74b04-83a5-46d6-a2cc-25e0559d33df.png%3Falt%3Dmedia%26token%3D633ff17b-72a8-49f5-8f96-a06e64af4679" alt="Logo" />
         </NavLink>
 
         <button
@@ -131,7 +131,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
               {/* <!-- Menu Item Dashboard --> */}
 
               {/* <!-- Menu Item Calendar --> */}
-              <li>
+              {/* <li>
                 <NavLink
                   to="/addemployee"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${pathname.includes('calendar') &&
@@ -141,7 +141,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                   <FaRegUser />
                   Add Employee
                 </NavLink>
-              </li>
+              </li> */}
               {/* <!-- Menu Item Calendar --> */}
 
               {/* <!-- Menu Item Profile --> */}
@@ -152,10 +152,10 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                     }`}
                 >
                   <HiOutlineUsers />
-                  All Employee
+                  All Users
                 </NavLink>
               </li>
-              <li>
+              {/* <li>
                 <NavLink
                   to="/employee-attendance"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${pathname.includes('profile') && 'bg-graydark dark:bg-meta-4'
@@ -164,11 +164,11 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                   <MdChecklist />
                   Attendance
                 </NavLink>
-              </li>
+              </li> */}
               {/* <!-- Menu Item Profile --> */}
 
               {/* <!-- Menu Item Tables --> */}
-              <li>
+              {/* <li>
                 <NavLink
                   to="/addexpense"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${pathname.includes('tables') && 'bg-graydark dark:bg-meta-4'
@@ -177,11 +177,11 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                   <RiMoneyDollarCircleLine />
                   Add Expense
                 </NavLink>
-              </li>
+              </li> */}
               {/* <!-- Menu Item Tables --> */}
 
               {/* <!-- Menu Item Settings --> */}
-              <li>
+              {/* <li>
                 <NavLink
                   to="/allexpenses"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${pathname.includes('settings') &&
@@ -191,9 +191,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                   <RiMoneyPoundCircleLine />
                   All Expense
                 </NavLink>
-              </li>
+              </li> */}
               {/* <!-- Menu Item Settings --> */}
-              <li>
+              {/* <li>
                 <NavLink
                   to="/addrevenue"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${pathname.includes('settings') &&
@@ -203,8 +203,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                   <TbMoneybag />
                   Add Revenue
                 </NavLink>
-              </li>
-              <li>
+              </li> */}
+              {/* <li>
                 <NavLink
                   to="/allrevenue"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${pathname.includes('settings') &&
@@ -214,7 +214,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                   <BiMoneyWithdraw />
                   All Revenue
                 </NavLink>
-              </li>
+              </li> */}
             </ul>
           </div>
         </nav>
