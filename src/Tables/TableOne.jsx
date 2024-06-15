@@ -4,6 +4,8 @@ import { MdDeleteForever, MdEdit } from "react-icons/md";
 import { ImEye } from "react-icons/im";
 import { collection, getDocs, deleteDoc, doc, query, where, updateDoc, writeBatch } from 'firebase/firestore';
 import { db } from '../firebase';
+import firebase from '@firebase/app';
+import '@firebase/firestore';
 
 const TableOne = () => {
     const [users, setUsers] = useState([]);
