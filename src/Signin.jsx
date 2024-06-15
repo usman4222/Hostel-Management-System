@@ -10,9 +10,7 @@ import { db } from './firebase';
 
 const Signin = () => {
 
-    const dispatch = useDispatch()
     const { enqueueSnackbar } = useSnackbar();
-    const { isAuthenticated } = useSelector((state) => state.user)
     const navigate = useNavigate();
     const [loignEmail, setLoginEmail] = useState("")
     const [loignPassword, setLoginPassword] = useState("")

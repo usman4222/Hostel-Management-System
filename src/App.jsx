@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 import AllEmployees from './components/EmployeesTable/AllEmployees';
 import NotFound from './pages/NotFound';
 import Profile from './pages/Profile';
-import ReferralDetails from './components/Cards/ReferralDetails';
+// import ReferralDetails from './components/Cards/ReferralDetails';
 
 function App() {
 
@@ -21,7 +21,7 @@ function App() {
           <Route path='/' element={<Dash />} />
           <Route path='/allemployees' element={<AllEmployees />} />
           <Route path='/profile/:id' element={<Profile />} />
-          <Route path='/referrals' element={<ReferralDetails />} />
+          {/* <Route path='/referrals' element={<ReferralDetails />} /> */}
           <Route path='*' element={<NotFound />} />
         </Route>
         <Route element={<Signin />} path="/sign-in" />

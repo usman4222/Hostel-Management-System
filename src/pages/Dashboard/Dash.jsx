@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import DefaultLayout from '../../layout/DefaultLayout';
 import CardDataStats from './CardDataStats';
-import ChartOne from '../../Charts/ChartOne';
+// import ChartOne from '../../Charts/ChartOne';
 import CountUp from 'react-countup';
 import { RiMoneyPoundCircleLine } from "react-icons/ri";
 import { RiMoneyDollarCircleLine } from "react-icons/ri";
 import { BiMoneyWithdraw } from "react-icons/bi";
 import { TbMoneybag } from "react-icons/tb";
-import { db } from '../../firebase';
 import { collection, getDocs } from 'firebase/firestore';
 
 function Dash() {
@@ -54,7 +53,7 @@ function Dash() {
             </div>
 
             <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
-                <ChartOne />
+                {/* <ChartOne /> */}
                 {/* <ChartTwo /> */}
                 {/* <ChartThree /> */}
                 {/* <ChatCard /> */}
