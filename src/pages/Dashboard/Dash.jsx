@@ -4,9 +4,6 @@ import CardDataStats from './CardDataStats';
 // import ChartOne from '../../Charts/ChartOne';
 import CountUp from 'react-countup';
 import { RiMoneyPoundCircleLine } from "react-icons/ri";
-import { RiMoneyDollarCircleLine } from "react-icons/ri";
-import { BiMoneyWithdraw } from "react-icons/bi";
-import { TbMoneybag } from "react-icons/tb";
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase';
 
@@ -27,8 +24,6 @@ function Dash() {
             setLoading(false);
         }
     };
-
-    console.log(users.length);
 
     const usersCount = users.length
 
