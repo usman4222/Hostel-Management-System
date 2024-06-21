@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import AllEmployees from './components/EmployeesTable/AllEmployees';
 import NotFound from './pages/NotFound';
 import Profile from './pages/Profile';
+import AddEmployee from './components/EmployeesTable/AddEmployee';
 
 function App() {
 
@@ -19,6 +20,7 @@ function App() {
         <Route element={<ProtectedRoute user={user} />}>
           <Route path='/' element={<Dash />} />
           <Route path='/allemployees' element={<AllEmployees />} />
+          <Route path='/adduser' element={<AddEmployee />} />
           <Route path='/profile/:id' element={<Profile />} />
           <Route path='*' element={<NotFound />} />
         </Route>
