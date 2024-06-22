@@ -93,7 +93,7 @@ const Profile = () => {
         <div className="px-4 pb-6 text-center lg:pb-8 xl:pb-11.5">
           <div className="relative overflow-hidden z-30 mx-auto -mt-22 h-30 w-full max-w-30 rounded-full bg-white/20 p-1 backdrop-blur sm:h-44 sm:max-w-44 sm:p-3">
             <div className="relative drop-shadow-2">
-              <img src={user.imageUrl} className="bg-white rounded-full" alt="profile" />
+              <img src={user.profileImage} className="bg-white rounded-full" alt="profile" />
             </div>
           </div>
           <h4 className="mt-2 text-md font-semibold text-black dark:text-white">{user.fullName}</h4>

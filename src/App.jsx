@@ -8,6 +8,10 @@ import AllEmployees from './components/EmployeesTable/AllEmployees';
 import NotFound from './pages/NotFound';
 import Profile from './pages/Profile';
 import AddEmployee from './components/EmployeesTable/AddEmployee';
+import UpdateUser from './components/EmployeesTable/UpdateUser';
+import AddBlog from './components/Blogs/AddBlog';
+import AllBlogs from './components/Blogs/AllBogs';
+import UpdateBlog from './components/Blogs/UpdateBlog';
 
 function App() {
 
@@ -22,6 +26,10 @@ function App() {
           <Route path='/allemployees' element={<AllEmployees />} />
           <Route path='/adduser' element={<AddEmployee />} />
           <Route path='/profile/:id' element={<Profile />} />
+          <Route path='/allblogs' element={<AllBlogs />} />
+          <Route path='/update-user/:id' element={<UpdateUser />} />
+          <Route path='/add-blog' element={<AddBlog />} />
+          <Route path='/update-blog/:id' element={<UpdateBlog />} />
           <Route path='*' element={<NotFound />} />
         </Route>
         <Route element={<Signin />} path="/sign-in" />

@@ -1,15 +1,16 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { collection, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../../firebase';
 import DefaultLayout from '../../layout/DefaultLayout';
 import Breadcrumb from '../Breadcrumbs/Breadcrumb';
 import { FaImage } from 'react-icons/fa';
 
-const AddEmployee = () => {
-    
+const UpdateUser = () => {
+    const { id } = useParams(); 
     const navigate = useNavigate();
+
     const [Fname, setFname] = useState('');
     const [surName, setSurname] = useState('');
     const [email, setEmail] = useState('');
@@ -21,75 +22,84 @@ const AddEmployee = () => {
     const [chosenImage, setChosenImage] = useState(null);
     const [referralCodeExists, setReferralCodeExists] = useState(false);
     const [referrerID, setReferrerID] = useState(null);
+    const [coins, setCoins] = useState('');
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const docRef = doc(db, 'profiles', id);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const userData = docSnap.data();
+                    setFname(userData.firstName);
+                    setSurname(userData.surname);
+                    setEmail(userData.email);
+                    setPin(userData.pin);
+                    setPhone(userData.phone);
+                    setCoins(userData.coins)
+                    setRefBy(userData.referralByCode);
+                    setRefCode(userData.referralCode);
+                } else {
+                    console.log('No such document!');
+                }
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
+        };
+
+        fetchUserData();
+    }, [id]);
 
     const handleProfileDetails = async (e) => {
         e.preventDefault();
-        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         try {
-
-            if (!emailPattern.test(email)) {
-                throw new Error('Invalid email format.');
-            }
-
-            const emailQuerySnapshot = await getDocs(query(collection(db, 'profiles'), where('email', '==', email)));
-            if (!emailQuerySnapshot.empty) {
-                throw new Error('Email already exists');
-            }
-
-            const refCodeQuerySnapshot = await getDocs(query(collection(db, 'profiles'), where('referralCode', '==', refCode)));
-            if (!refCodeQuerySnapshot.empty) {
-                throw new Error('Referral code already exists');
-            }
-
-            if (refBy && !referralCodeExists) {
-                alert('Friend Referral code does not exist');
-                return;
-            }
-
-            const imageRef = await uploadImage();
-            await addDoc(collection(db, 'profiles'), {
-                email: email,
+            const docRef = doc(db, 'profiles', id);
+            const { downloadUrl, fileName } = await uploadImage();
+            const userData = {
                 firstName: Fname,
                 surname: surName,
+                email: email,
+                profileImage: downloadUrl,
                 pin: pin,
                 phone: phone,
+                coins: coins,
                 referralByCode: refBy,
                 referralCode: refCode,
-                imageUrl: imageRef,
-                referrerID: referrerID
-            });
-            console.log("Document successfully written!");
+            };
 
-            setFname('');
-            setSurname('');
-            setEmail('');
-            setPin('');
-            setPhone('');
-            setRefBy('');
-            setRefCode('');
-            setChosenImage(null);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                const existingData = docSnap.data();
+                let updateNeeded = false;
 
-            navigate('/allemployees');
-        } catch (error) {
-            console.error('Error storing profile details:', error);
-            if (error.message === 'Email already exists') {
-                alert('Email already exists');
-            } else if (error.message === 'Referral code already exists') {
-                alert('Referral code already exists');
-            }
-            else if ("Invalid email format.") {
-                alert("Invalid email format.")
+                for (const key in userData) {
+                    if (userData[key] !== existingData[key]) {
+                        updateNeeded = true;
+                        break;
+                    }
+                }
+
+                if (updateNeeded) {
+                    await updateDoc(docRef, userData);
+                    console.log('Document successfully updated!');
+                } else {
+                    console.log('No changes detected.');
+                }
             } else {
-                console.log(error.message, "Other errors");
+                console.log('No such document!');
             }
+
+            navigate('/allemployees'); 
+        } catch (error) {
+            console.error('Error updating profile details:', error);
         }
     };
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         setImage(file);
-        setChosenImage(file ? file.name : null);
+        setChosenImage(file ? file.name : '');
     };
 
     const uploadImage = async () => {
@@ -97,34 +107,34 @@ const AddEmployee = () => {
 
         const storageRef = ref(storage, `images/${image.name}`);
         await uploadBytes(storageRef, image);
-        return getDownloadURL(storageRef);
-    };  
+        const downloadUrl = await getDownloadURL(storageRef);
+        return { downloadUrl, fileName: image.name };
+    };
 
     const checkReferralCode = async () => {
         if (!refBy) return;
 
-        const refCodeQuerySnapshot = await getDocs(query(collection(db, 'profiles'), where('referralCode', '==', refBy)));
-        if (refCodeQuerySnapshot.empty) {
+        const refCodeQuerySnapshot = await getDoc(doc(db, 'profiles', refBy));
+        if (refCodeQuerySnapshot.exists) {
+            setReferralCodeExists(true);
+            setReferrerID(refBy); 
+        } else {
             setReferralCodeExists(false);
             setReferrerID(null);
             alert('Friend Referral code does not exist');
-        } else {
-            setReferralCodeExists(true);
-            const doc = refCodeQuerySnapshot.docs[0];
-            setReferrerID(doc.id);
         }
     };
 
     return (
         <DefaultLayout>
-            <Breadcrumb pageName="Add New User" />
+            <Breadcrumb pageName="Update User" />
 
-            <div className=" flex justify-center items-center ">
-                <div className="flex flex-col ">
+            <div className="flex justify-center items-center">
+                <div className="flex flex-col">
                     <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
                         <div className="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
                             <h3 className="font-medium text-black dark:text-white">
-                                User Form
+                                Update User Form
                             </h3>
                         </div>
                         <form
@@ -183,7 +193,7 @@ const AddEmployee = () => {
                                             <label className="w-full flex gap-3 items-center rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 focus-within:ring-2 text-white cursor-pointer focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary   hover:ring-1 hover:ring-[#363636]/30 transition-all ease-in-out">
                                                 <FaImage className="text-xl mb-1 text-[#5F5F5F]" />
                                                 <span className="text-[#5F5F5F]">
-                                                    {chosenImage || 'Choose an image...'}
+                                                {chosenImage ? chosenImage : 'Choose an image...'}
                                                 </span>
                                                 <input
                                                     type="file"
@@ -203,6 +213,19 @@ const AddEmployee = () => {
                                         type="password"
                                         onChange={(e) => setPin(e.target.value)}
                                         value={pin}
+                                        required
+                                        placeholder='Enter Your Pin'
+                                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                    />
+                                </div>
+                                <div className="mb-4.5">
+                                    <label className="mb-2.5 block text-black dark:text-white">
+                                        Coins
+                                    </label>
+                                    <input
+                                        type="number"
+                                        onChange={(e) => setCoins(e.target.value)}
+                                        value={coins}
                                         required
                                         placeholder='Enter Your Pin'
                                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -252,9 +275,8 @@ const AddEmployee = () => {
                                 </div>
                                 <button
                                     type="submit"
-                                    disabled={refBy && !referralCodeExists}
-                                    style={{ cursor: refBy && !referralCodeExists ? 'not-allowed' : 'pointer' }} className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90">
-                                    Add
+                                    className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90">
+                                    Update
                                 </button>
                             </div>
                         </form>
@@ -265,4 +287,4 @@ const AddEmployee = () => {
     );
 };
 
-export default AddEmployee;
+export default UpdateUser;
