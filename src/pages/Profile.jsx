@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { doc, getDoc, collection, query, where, getDocs, updateDoc, deleteDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
 import CoverOne from '../images/cover/cover-01.png';
 import DefaultLayout from '../layout/DefaultLayout';
 import Breadcrumb from '../components/Breadcrumbs/Breadcrumb';
-import { FaPhoneAlt } from "react-icons/fa";
+import { FaPhoneAlt } from 'react-icons/fa';
 import { MdDeleteForever } from 'react-icons/md';
+import { CSVLink } from 'react-csv';
 
 const Profile = () => {
   const { id } = useParams();
@@ -24,9 +25,8 @@ const Profile = () => {
 
         const q = query(collection(db, 'profiles'), where('referrerID', '==', id));
         const querySnapshot = await getDocs(q);
-        const referralsList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const referralsList = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
         setReferrals(referralsList);
-        console.log(referralsList);
         setTotalReferrals(querySnapshot.size);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -39,7 +39,6 @@ const Profile = () => {
 
   const handleDeleteReferral = async (referralId) => {
     try {
-      // Get the referral document
       const referralDoc = doc(db, 'profiles', referralId);
       const referralSnapshot = await getDoc(referralDoc);
       if (!referralSnapshot.exists()) {
@@ -47,13 +46,11 @@ const Profile = () => {
         return;
       }
 
-      // Update the referral document to remove referrerID and referralByCode
       await updateDoc(referralDoc, {
-        referrerID: "",
-        referralByCode: ""
+        referrerID: '',
+        referralByCode: '',
       });
 
-      // Update the user's referral count
       setTotalReferrals((prev) => prev - 1);
       setReferrals((prev) => prev.filter((referral) => referral.id !== referralId));
     } catch (error) {
@@ -82,6 +79,35 @@ const Profile = () => {
       </DefaultLayout>
     );
   }
+
+  // CSV export functionality
+  const headers = [
+    { label: 'First Name', key: 'firstName' },
+    { label: 'Surname', key: 'surname' },
+    { label: 'Email', key: 'email' },
+    { label: 'Phone', key: 'phone' },
+    { label: 'Referral Code', key: 'referralCode' },
+    { label: 'Referral By Code', key: 'referralByCode' },
+    { label: 'Coins', key: 'coins' },
+  ];
+
+  const csvData = [
+    {
+      firstName: user.firstName,
+      surname: user.surname,
+      email: user.email,
+      phone: user.phone,
+      referralCode: user.referralCode,
+      referralByCode: user.referralByCode,
+      coins: user.coins,
+    },
+    ...referrals.map((referral) => ({
+      firstName: referral.firstName,
+      surname: referral.surname,
+      phone: referral.phone,
+      referralCode: referral.referralCode,
+    })),
+  ];
 
   return (
     <DefaultLayout>
@@ -134,7 +160,7 @@ const Profile = () => {
               referrals.map((referral, index) => (
                 <div key={index} className="flex items-center gap-5 py-3 px-7.5 hover:bg-gray-3 dark:hover:bg-meta-4">
                   <div className="relative h-14 w-14 rounded-full">
-                    <img src={referral.imageUrl} alt="User" className='rounded-full' />
+                    <img src={referral.profileImage} alt="User" className='rounded-full' />
                   </div>
                   <div className="flex flex-1 items-center justify-between">
                     <div>
@@ -149,6 +175,20 @@ const Profile = () => {
               ))
             )}
           </div>
+        )}
+      </div>
+
+      <div className="flex flex-col items-center justify-center mt-4">
+        <CSVLink
+          data={csvData}
+          headers={headers}
+          filename={`user_${user.firstName}_${user.surname}_referrals.csv`}
+          className="bg-primary text-white rounded px-4 py-2 shadow hover:bg-opacity-90"
+        >
+          Export User & Referrals Data (CSV)
+        </CSVLink>
+        {totalReferrals > 0 && (
+          <p className="text-sm mt-2 text-gray-500">Including {totalReferrals} referral(s)</p>
         )}
       </div>
     </DefaultLayout>

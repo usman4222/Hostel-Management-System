@@ -7,16 +7,19 @@ import '@firebase/firestore';
 import { db } from '../../firebase';
 import DefaultLayout from '../../layout/DefaultLayout';
 import Breadcrumb from '../Breadcrumbs/Breadcrumb';
+import { useSnackbar } from 'notistack';
 
 const AllBlogs = () => {
     const [blogs, setBlogs] = useState([]);
     const [loading, setLoading] = useState(true);
-
+    const { enqueueSnackbar } = useSnackbar();
 
     const fetchBlogs = async () => {
         try {
             const querySnapshot = await getDocs(collection(db, 'blogs'));
             const blogsList = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+            blogsList.forEach(blog => console.log(blog.date));
+            blogsList.sort((a, b) => new Date(b.date) - new Date(a.date));
             setBlogs(blogsList);
             setLoading(false);
         } catch (error) {
@@ -32,8 +35,9 @@ const AllBlogs = () => {
     const deleteUserHandler = async (userId) => {
         try {
             await deleteDoc(doc(db, 'blogs', userId));
+            enqueueSnackbar('Blog deleted successfully', { variant: 'success' });
             console.log(`Blog with ID ${userId} deleted successfully`);
-            fetchBlogs();
+            fetchBlogs(); 
         } catch (error) {
             console.error('Error deleting user or updating referrals: ', error);
         }
@@ -86,7 +90,7 @@ const AllBlogs = () => {
                                                 <p className="text-black dark:text-white">{blog.link}</p>
                                             </td>
                                             <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                                <p className="text-black dark:text-white">{blog.date}</p>
+                                                <p className="text-black dark:text-white">{new Date(blog.date).toLocaleDateString()}</p>
                                             </td>
                                             <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                                 <div className="flex items-center space-x-3.5">

@@ -5,10 +5,12 @@ import { ImEye } from "react-icons/im";
 import { collection, getDocs, deleteDoc, doc, query, where, updateDoc, writeBatch } from 'firebase/firestore';
 import { db } from '../firebase';
 import '@firebase/firestore';
+import { useSnackbar } from 'notistack';
 
 const TableOne = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const { enqueueSnackbar } = useSnackbar();
 
     const fetchUsers = async () => {
         try {
@@ -29,7 +31,7 @@ const TableOne = () => {
     const deleteUserHandler = async (userId, referralCode) => {
         try {
             await deleteDoc(doc(db, 'profiles', userId));
-            console.log(`User with ID ${userId} deleted successfully`);
+            enqueueSnackbar('User deleted successfully', { variant: 'success' });
 
             const q = query(collection(db, 'profiles'), where('referralByCode', '==', referralCode));
             const querySnapshot = await getDocs(q);
@@ -43,7 +45,6 @@ const TableOne = () => {
             });
 
             await batch.commit();
-            console.log(`Users updated successfully`);
 
             fetchUsers();
         } catch (error) {

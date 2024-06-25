@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { collection, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, updateDoc, query, where, getDocs } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../../firebase';
 import DefaultLayout from '../../layout/DefaultLayout';
 import Breadcrumb from '../Breadcrumbs/Breadcrumb';
 import { FaImage } from 'react-icons/fa';
+import { useSnackbar } from 'notistack';
+import Spinner from '../Spinner';
 
 const UpdateUser = () => {
-    const { id } = useParams(); 
+    const { id } = useParams();
     const navigate = useNavigate();
 
     const [Fname, setFname] = useState('');
@@ -23,6 +25,8 @@ const UpdateUser = () => {
     const [referralCodeExists, setReferralCodeExists] = useState(false);
     const [referrerID, setReferrerID] = useState(null);
     const [coins, setCoins] = useState('');
+    const { enqueueSnackbar } = useSnackbar();
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -36,7 +40,7 @@ const UpdateUser = () => {
                     setEmail(userData.email);
                     setPin(userData.pin);
                     setPhone(userData.phone);
-                    setCoins(userData.coins)
+                    setCoins(userData.coins);
                     setRefBy(userData.referralByCode);
                     setRefCode(userData.referralCode);
                 } else {
@@ -52,21 +56,41 @@ const UpdateUser = () => {
 
     const handleProfileDetails = async (e) => {
         e.preventDefault();
-
+        setLoading(true);
         try {
+            // const refCodeQuerySnapshot = await getDocs(query(collection(db, 'profiles'), where('referralCode', '==', refCode)));
+            // if (!refCodeQuerySnapshot.empty) {
+            //     throw new Error('Referral code already exists');
+            // }
+
+
+            // if (refBy && !referralCodeExists) {
+            //     alert('Friend Referral code does not exist');
+            //     return;
+            // }
+
             const docRef = doc(db, 'profiles', id);
-            const { downloadUrl, fileName } = await uploadImage();
+            // let downloadUrl = null;
+
+            // if (image) {
+            //     const { downloadUrl: imageUrl, fileName } = await uploadImage();
+            //     downloadUrl = imageUrl;
+            // }
+
             const userData = {
                 firstName: Fname,
                 surname: surName,
-                email: email,
-                profileImage: downloadUrl,
-                pin: pin,
+                // email: email,
+                // pin: pin,
                 phone: phone,
                 coins: coins,
-                referralByCode: refBy,
-                referralCode: refCode,
+                // referralByCode: refBy,
+                // referralCode: refCode,
             };
+
+            // if (downloadUrl) {
+            //     userData.profileImage = downloadUrl;
+            // }
 
             const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
@@ -82,6 +106,7 @@ const UpdateUser = () => {
 
                 if (updateNeeded) {
                     await updateDoc(docRef, userData);
+                    enqueueSnackbar('Document successfully updated!', { variant: 'success' })
                     console.log('Document successfully updated!');
                 } else {
                     console.log('No changes detected.');
@@ -89,41 +114,48 @@ const UpdateUser = () => {
             } else {
                 console.log('No such document!');
             }
-
-            navigate('/allemployees'); 
+            navigate('/allemployees');
         } catch (error) {
             console.error('Error updating profile details:', error);
         }
-    };
-
-    const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        setImage(file);
-        setChosenImage(file ? file.name : '');
-    };
-
-    const uploadImage = async () => {
-        if (!image) return '';
-
-        const storageRef = ref(storage, `images/${image.name}`);
-        await uploadBytes(storageRef, image);
-        const downloadUrl = await getDownloadURL(storageRef);
-        return { downloadUrl, fileName: image.name };
-    };
-
-    const checkReferralCode = async () => {
-        if (!refBy) return;
-
-        const refCodeQuerySnapshot = await getDoc(doc(db, 'profiles', refBy));
-        if (refCodeQuerySnapshot.exists) {
-            setReferralCodeExists(true);
-            setReferrerID(refBy); 
-        } else {
-            setReferralCodeExists(false);
-            setReferrerID(null);
-            alert('Friend Referral code does not exist');
+        finally {
+            setLoading(false);
         }
     };
+
+    // const handleImageChange = (e) => {
+    //     const file = e.target.files[0];
+    //     setImage(file);
+    //     setChosenImage(file ? file.name : '');
+    // };
+
+    // const uploadImage = async () => {
+    //     if (!image) return '';
+
+    //     const storageRef = ref(storage, `images/${image.name}`);
+    //     await uploadBytes(storageRef, image);
+    //     const downloadUrl = await getDownloadURL(storageRef);
+    //     return { downloadUrl, fileName: image.name };
+    // };
+
+    // const checkReferralCode = async () => {
+    //     if (!refBy) return;
+
+    //     const refCodeQuerySnapshot = await getDocs(query(collection(db, 'profiles'), where('referralCode', '==', refBy)));
+    //     if (refCodeQuerySnapshot.empty) {
+    //         setReferralCodeExists(false);
+    //         setReferrerID(null);
+    //         alert('Friend Referral code does not exist');
+    //     } else {
+    //         const doc = refCodeQuerySnapshot.docs[0];
+    //         if (refBy !== initialRefCode && refBy !== currentUserRefCode) {
+    //             // Only update referralCodeExists and setReferrerID if refBy has changed and it's not the current user's referral code
+    //             setReferralCodeExists(true);
+    //             setReferrerID(doc.id);
+    //         }
+    //     }
+    // };
+
 
     return (
         <DefaultLayout>
@@ -151,7 +183,6 @@ const UpdateUser = () => {
                                             type="text"
                                             onChange={(e) => setFname(e.target.value)}
                                             value={Fname}
-                                            required
                                             placeholder='Enter Your First Name'
                                             className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                         />
@@ -165,13 +196,12 @@ const UpdateUser = () => {
                                             type="text"
                                             onChange={(e) => setSurname(e.target.value)}
                                             value={surName}
-                                            required
                                             placeholder='Enter Your Surname'
                                             className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                         />
                                     </div>
                                 </div>
-                                <div className="mb-4.5">
+                                {/* <div className="mb-4.5">
                                     <label className="mb-2.5 block text-black dark:text-white">
                                         Email
                                     </label>
@@ -179,12 +209,11 @@ const UpdateUser = () => {
                                         type="text"
                                         onChange={(e) => setEmail(e.target.value)} 
                                         value={email}
-                                        required
                                         placeholder='Enter Your Email'
                                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                     />
-                                </div>
-                                <div>
+                                </div> */}
+                                {/* <div>
                                     <div className="relative mb-2.5 flex text-black dark:text-white">
                                         <h6 className=" text-[16px]">Profile Image</h6>
                                     </div>
@@ -204,8 +233,8 @@ const UpdateUser = () => {
                                             </label>
                                         </div>
                                     </div>
-                                </div>
-                                <div className="mb-4.5">
+                                </div> */}
+                                {/* <div className="mb-4.5">
                                     <label className="mb-2.5 block text-black dark:text-white">
                                         Pin
                                     </label>
@@ -213,11 +242,10 @@ const UpdateUser = () => {
                                         type="password"
                                         onChange={(e) => setPin(e.target.value)}
                                         value={pin}
-                                        required
                                         placeholder='Enter Your Pin'
                                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                     />
-                                </div>
+                                </div> */}
                                 <div className="mb-4.5">
                                     <label className="mb-2.5 block text-black dark:text-white">
                                         Coins
@@ -226,8 +254,7 @@ const UpdateUser = () => {
                                         type="number"
                                         onChange={(e) => setCoins(e.target.value)}
                                         value={coins}
-                                        required
-                                        placeholder='Enter Your Pin'
+                                        placeholder='Enter Your Coins'
                                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                     />
                                 </div>
@@ -242,12 +269,11 @@ const UpdateUser = () => {
                                             setPhone(enteredValue);
                                         }}
                                         value={phone}
-                                        required
                                         placeholder='Enter Your Phone No.'
                                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                     />
                                 </div>
-                                <div className="mb-4.5">
+                                {/* <div className="mb-4.5">
                                     <label className="mb-2.5 block text-black dark:text-white">
                                         If User Referred by a friend? (Optional)
                                     </label>
@@ -259,8 +285,8 @@ const UpdateUser = () => {
                                         onBlur={checkReferralCode}
                                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                     />
-                                </div>
-                                <div className="mb-4.5">
+                                </div> */}
+                                {/* <div className="mb-4.5">
                                     <label className="mb-2.5 block text-black dark:text-white">
                                         User's Referral Code
                                     </label>
@@ -268,15 +294,20 @@ const UpdateUser = () => {
                                         type="text"
                                         onChange={(e) => setRefCode(e.target.value)}
                                         value={refCode}
-                                        required
                                         placeholder='Enter your custom referral code here'
                                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                     />
-                                </div>
+                                </div> */}
                                 <button
                                     type="submit"
+                                    // disabled={refBy && !referralCodeExists}
+                                    disabled={loading}
+                                    // style={{ cursor: refBy && !referralCodeExists ? 'not-allowed' : 'pointer' }}
                                     className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90">
-                                    Update
+                                    
+                                
+                                    {loading ? <Spinner /> : 'Update'}
+
                                 </button>
                             </div>
                         </form>

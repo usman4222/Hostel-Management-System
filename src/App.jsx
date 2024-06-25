@@ -12,6 +12,7 @@ import UpdateUser from './components/EmployeesTable/UpdateUser';
 import AddBlog from './components/Blogs/AddBlog';
 import AllBlogs from './components/Blogs/AllBogs';
 import UpdateBlog from './components/Blogs/UpdateBlog';
+import GuestRoute from './GuestRoute';
 
 function App() {
 
@@ -32,7 +33,9 @@ function App() {
           <Route path='/update-blog/:id' element={<UpdateBlog />} />
           <Route path='*' element={<NotFound />} />
         </Route>
-        <Route element={<Signin />} path="/sign-in" />
+        <Route element={<GuestRoute />}>
+          <Route element={<Signin />} path="/sign-in" />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

@@ -7,9 +7,6 @@ import { useSnackbar } from 'notistack';
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  // console.log("this is user", user);
-
-  // const role = user.role
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
 
@@ -56,7 +53,6 @@ const DropdownUser = () => {
       >
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
-            {/* {user && user.role} */}
           </span>
           <span className="block text-xs">Coin Math</span>
         </span>

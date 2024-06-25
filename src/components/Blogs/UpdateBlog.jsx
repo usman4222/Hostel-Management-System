@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { collection, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../../firebase';
 import DefaultLayout from '../../layout/DefaultLayout';
 import Breadcrumb from '../Breadcrumbs/Breadcrumb';
 import { FaImage } from 'react-icons/fa';
+import { useSnackbar } from 'notistack';
+import Spinner from '../Spinner';
 
 const UpdateBlog = () => {
     const navigate = useNavigate();
@@ -16,7 +18,9 @@ const UpdateBlog = () => {
     const [image, setImage] = useState(null);
     const [link, setLink] = useState('');
     const [chosenImage, setChosenImage] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true); 
+    const [submitLoading, setSubmitLoading] = useState(false); 
+    const { enqueueSnackbar } = useSnackbar();
 
     useEffect(() => {
         const fetchBlog = async () => {
@@ -32,7 +36,7 @@ const UpdateBlog = () => {
                     setInitialState({
                         title: blogData.title,
                         link: blogData.link,
-                        date: blogData.date
+                        date: blogData.date,
                     });
                 } else {
                     console.log('No such document!');
@@ -49,6 +53,7 @@ const UpdateBlog = () => {
 
     const handleUpdateBlog = async (e) => {
         e.preventDefault();
+        setSubmitLoading(true);
 
         try {
             let updatedFields = {};
@@ -70,11 +75,13 @@ const UpdateBlog = () => {
 
             const blogRef = doc(db, 'blogs', id);
             await updateDoc(blogRef, updatedFields);
-
+            enqueueSnackbar('Blog successfully updated!', { variant: 'success' });
             console.log("Blog successfully updated!");
             navigate('/allblogs');
         } catch (error) {
             console.error("Error updating blog:", error.message);
+        } finally {
+            setSubmitLoading(false);
         }
     };
 
@@ -137,19 +144,6 @@ const UpdateBlog = () => {
                                 </div>
                                 <div className="mb-4.5">
                                     <label className="mb-2.5 block text-black dark:text-white">
-                                        Date
-                                    </label>
-                                    <input
-                                        type="date"
-                                        value={date}
-                                        onChange={(e) => setDate(e.target.value)}
-                                        required
-                                        placeholder="Enter Blog Date"
-                                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                                    />
-                                </div>
-                                <div className="mb-4.5">
-                                    <label className="mb-2.5 block text-black dark:text-white">
                                         Blog Image
                                     </label>
                                     <div className="flex items-center">
@@ -169,9 +163,9 @@ const UpdateBlog = () => {
                                 </div>
                                 <button
                                     type="submit"
-                                    className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90"
+                                    className="flex w-full justify-center items-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90"
                                 >
-                                    Update Blog
+                                    {submitLoading ? <Spinner /> : 'Update Blog'}
                                 </button>
                             </div>
                         </form>

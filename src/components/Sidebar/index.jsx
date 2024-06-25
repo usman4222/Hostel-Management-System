@@ -6,10 +6,8 @@ import { RxDashboard } from "react-icons/rx";
 import { FaRegUser } from "react-icons/fa";
 import { HiOutlineUsers } from "react-icons/hi";
 import { MdChecklist } from "react-icons/md";
-import { RiMoneyDollarCircleLine } from "react-icons/ri";
-import { TbMoneybag } from "react-icons/tb";
-import { BiMoneyWithdraw } from "react-icons/bi";
-import { RiMoneyPoundCircleLine } from "react-icons/ri";
+import { TbArticle } from "react-icons/tb";
+import { GrArticle } from "react-icons/gr";
 
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
@@ -134,7 +132,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
               <li>
                 <NavLink
                   to="/adduser"
-                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${pathname.includes('calendar') &&
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${pathname.includes('adduser') &&
                     'bg-graydark dark:bg-meta-4'
                     }`}
                 >
@@ -148,7 +146,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
               <li>
                 <NavLink
                   to="/allemployees"
-                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${pathname.includes('profile') && 'bg-graydark dark:bg-meta-4'
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${pathname.includes('allemployees') && 'bg-graydark dark:bg-meta-4'
                     }`}
                 >
                   <HiOutlineUsers />
@@ -158,20 +156,20 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
               <li>
                 <NavLink
                   to="/add-blog"
-                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${pathname.includes('profile') && 'bg-graydark dark:bg-meta-4'
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${pathname.includes('add-blog') && 'bg-graydark dark:bg-meta-4'
                     }`}
                 >
-                  <MdChecklist />
+                  <TbArticle />
                   Add Blogs
                 </NavLink>
               </li>
               <li>
                 <NavLink
                   to="/allblogs"
-                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${pathname.includes('profile') && 'bg-graydark dark:bg-meta-4'
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${pathname.includes('allblogs') && 'bg-graydark dark:bg-meta-4'
                     }`}
                 >
-                  <MdChecklist />
+                  <GrArticle />
                   All Blogs
                 </NavLink>
               </li>
