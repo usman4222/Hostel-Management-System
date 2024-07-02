@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MdDeleteForever, MdEdit } from "react-icons/md";
 import { ImEye } from "react-icons/im";
-import { collection, getDocs, deleteDoc, doc, query, where, updateDoc, writeBatch } from 'firebase/firestore';
+import { collection, getDocs, deleteDoc, doc, query, where, writeBatch } from 'firebase/firestore';
 import { db } from '../firebase';
 import '@firebase/firestore';
 import { useSnackbar } from 'notistack';
+import { CSVLink } from 'react-csv';
 
 const TableOne = () => {
     const [users, setUsers] = useState([]);
@@ -52,6 +53,15 @@ const TableOne = () => {
         }
     };
 
+    const csvHeaders = [
+        { label: 'First Name', key: 'firstName' },
+        { label: 'Surname', key: 'surname' },
+        { label: 'Email', key: 'email' },
+        { label: 'Referral By Code', key: 'referralByCode' },
+        { label: 'Referral Code', key: 'referralCode' },
+        { label: 'Coins', key: 'coins' },
+    ];
+
     return (
         <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
             <div className="max-w-full overflow-x-auto">
@@ -59,6 +69,14 @@ const TableOne = () => {
                     <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">
                         All Users
                     </h4>
+                    <CSVLink
+                        data={users}
+                        headers={csvHeaders}
+                        filename={"users.csv"}
+                        className="mb-6 text-base  dark:text-white bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded"
+                    >
+                        Export to CSV
+                    </CSVLink>
                 </div>
                 {loading ? (
                     <div className='border-t border-[#eee] py-5 px-4 pl-9 dark:border-strokedark'>
@@ -81,6 +99,7 @@ const TableOne = () => {
                                 <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Email</th>
                                 <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Referral By Code</th>
                                 <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Referral Code</th>
+                                <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Coins</th>
                                 <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Actions</th>
                             </tr>
                         </thead>
@@ -101,6 +120,9 @@ const TableOne = () => {
                                     </td>
                                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                         <p className="text-black dark:text-white">{user.referralCode}</p>
+                                    </td>
+                                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                                        <p className="text-black dark:text-white">{user.coins}</p>
                                     </td>
                                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                         <div className="flex items-center space-x-3.5">

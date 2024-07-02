@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, getDoc, collection, query, where, getDocs, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import CoverOne from '../images/cover/cover-01.png';
 import DefaultLayout from '../layout/DefaultLayout';
@@ -8,6 +8,7 @@ import Breadcrumb from '../components/Breadcrumbs/Breadcrumb';
 import { FaPhoneAlt } from 'react-icons/fa';
 import { MdDeleteForever } from 'react-icons/md';
 import { CSVLink } from 'react-csv';
+import { useSnackbar } from 'notistack';
 
 const Profile = () => {
   const { id } = useParams();
@@ -16,6 +17,7 @@ const Profile = () => {
   const [referrals, setReferrals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showReferrals, setShowReferrals] = useState(false);
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -53,6 +55,7 @@ const Profile = () => {
 
       setTotalReferrals((prev) => prev - 1);
       setReferrals((prev) => prev.filter((referral) => referral.id !== referralId));
+      enqueueSnackbar('Referral deleted successfully', { variant: 'success' });
     } catch (error) {
       console.error('Error deleting referral:', error);
     }

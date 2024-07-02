@@ -50,7 +50,7 @@ function Dash() {
         <DefaultLayout>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
                 <CardDataStats title="Total Users" total={<CountUp end={usersCount} duration={2} />}>
-                    <RiMoneyPoundCircleLine className="fill-primary dark:fill-white text-xl" />
+                    <RiMoneyPoundCircleLine className=" dark:fill-white text-xl" />
                 </CardDataStats>
                 <CardDataStats title="Total Blogs" total={<CountUp end={blogsCount} duration={2} />}>
                     <GrArticle className="fill-primary dark:fill-white text-xl" />
