@@ -13,14 +13,13 @@ const AddAd = () => {
     const [existingAdId, setExistingAdId] = useState(null);
 
     useEffect(() => {
-        // Fetch existing ad link on component mount
         const fetchAd = async () => {
             try {
                 const querySnapshot = await getDocs(collection(db, 'ad'));
                 if (!querySnapshot.empty) {
                     const adDoc = querySnapshot.docs[0];
                     setLink(adDoc.data().link);
-                    setExistingAdId(adDoc.id); // Store the document ID for updating
+                    setExistingAdId(adDoc.id); 
                 }
             } catch (error) {
                 console.error('Error fetching ad:', error);
@@ -36,14 +35,12 @@ const AddAd = () => {
 
         try {
             if (existingAdId) {
-                // Update the existing ad link
                 const adDocRef = doc(db, 'ad', existingAdId);
                 await updateDoc(adDocRef, {
                     link: link,
                 });
                 enqueueSnackbar('Ad Link updated successfully!', { variant: 'success' });
             } else {
-                // Add a new ad link
                 await addDoc(collection(db, 'ad'), {
                     link: link,
                 });
