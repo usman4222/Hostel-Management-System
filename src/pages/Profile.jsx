@@ -19,6 +19,7 @@ const Profile = () => {
   const [showReferrals, setShowReferrals] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
 
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -60,6 +61,12 @@ const Profile = () => {
       console.error('Error deleting referral:', error);
     }
   };
+
+  const hourlyRate = 0.14 * (totalReferrals * 1.1);
+
+  console.log(0.14*(1*1.1));
+
+
 
   if (loading) {
     return (
@@ -131,7 +138,7 @@ const Profile = () => {
           <div className='flex justify-center items-center gap-2'>
             <FaPhoneAlt /> <p className="font-medium">{user.phone}</p>
           </div>
-          <div className="mx-auto mt-4.5 mb-5.5 grid max-w-[700px] grid-cols-4 rounded-md border border-stroke py-2.5 shadow-1 dark:border-strokedark dark:bg-[#37404F]">
+          <div className="mx-auto mt-4.5 mb-5.5 grid max-w-[800px] grid-cols-4 rounded-md border border-stroke py-2.5 shadow-1 dark:border-strokedark dark:bg-[#37404F]">
             <div className="flex flex-col items-center justify-center gap-1 border-r border-stroke px-4 dark:border-strokedark xsm:flex-row">
               <span className="font-semibold text-black dark:text-white">{user.referralCode}</span>
               <span className="text-sm">Referral Code</span>
@@ -141,8 +148,8 @@ const Profile = () => {
               <span className="text-sm">Referral By Code</span>
             </div>
             <div className="flex flex-col items-center justify-center gap-1 border-r border-stroke px-4 dark:border-strokedark xsm:flex-row">
-              <span className="font-semibold text-black dark:text-white">{user.coins}</span>
-              <span className="text-sm">Coins</span>
+              <span className="font-semibold text-black dark:text-white">{hourlyRate.toFixed(2)}</span>
+              <span className="text-sm"> Mining rate</span>
             </div>
             <div className='flex items-center justify-center'>
               <button onClick={() => setShowReferrals(!showReferrals)}>
