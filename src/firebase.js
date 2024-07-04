@@ -4,10 +4,11 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import '@firebase/firestore';
-import { firebase_key } from "./config";
+// import { firebaseKey } from "./config";
+
 
 const firebaseConfig = {
-  apiKey: firebase_key,
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: "coinmath-536d9.firebaseapp.com",
   projectId: "coinmath-536d9",
   storageBucket: "coinmath-536d9.appspot.com",
@@ -17,10 +18,10 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+// const analytics = getAnalytics(app);
 const db = getFirestore(app);
-const storage = getStorage(app); 
+const storage = getStorage(app);
 
-export const auth = getAuth(app);
+// export const auth = getAuth(app);
 export default app;
 export { db, storage };
