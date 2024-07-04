@@ -7,7 +7,6 @@ import { db } from '../firebase';
 import '@firebase/firestore';
 import { useSnackbar } from 'notistack';
 import { CSVLink } from 'react-csv';
-import { VITE_FIREBASE_API_KEY } from '../config';
 
 const TableOne = () => {
     const [users, setUsers] = useState([]);
@@ -53,8 +52,6 @@ const TableOne = () => {
             console.error('Error deleting user or updating referrals: ', error);
         }
     };
-
-    console.log("key is this ",VITE_FIREBASE_API_KEY);
 
     const csvHeaders = [
         { label: 'Wallet Address', key: 'baseWalletAddress' },
