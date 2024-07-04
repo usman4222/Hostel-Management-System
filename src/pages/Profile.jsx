@@ -64,10 +64,6 @@ const Profile = () => {
 
   const hourlyRate = 0.14 * (totalReferrals * 1.1);
 
-  console.log(0.14*(1*1.1));
-
-
-
   if (loading) {
     return (
       <DefaultLayout>
