@@ -9,6 +9,7 @@ import { MdChecklist } from "react-icons/md";
 import { TbArticle } from "react-icons/tb";
 import { GrArticle } from "react-icons/gr";
 import { RiMoneyDollarCircleLine } from 'react-icons/ri';
+import { LuCoins } from 'react-icons/lu';
 
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
@@ -193,8 +194,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${pathname.includes('add-mining-rate') && 'bg-graydark dark:bg-meta-4'
                     }`}
                 >
-                  <RiMoneyDollarCircleLine />
-                  Add Ad Link
+                  <LuCoins />
+                  Add Mining Rate
                 </NavLink>
               </li>
               {/* <!-- Menu Item Tables --> */}
