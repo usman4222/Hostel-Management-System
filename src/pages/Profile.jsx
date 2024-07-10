@@ -18,13 +18,20 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [showReferrals, setShowReferrals] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-
+  const [hourlyRate, setHourlyRate] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const userDoc = await getDoc(doc(db, 'profiles', id));
-        if (userDoc.exists()) setUser(userDoc.data());
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          setUser(userData);
+
+          // Ensure hourlyRate is a number
+          const rate = userData.hourlyRate ? Number(userData.hourlyRate) : 0;
+          setHourlyRate(rate);
+        }
 
         const q = query(collection(db, 'profiles'), where('referrerID', '==', id));
         const querySnapshot = await getDocs(q);
@@ -61,8 +68,6 @@ const Profile = () => {
       console.error('Error deleting referral:', error);
     }
   };
-
-  const hourlyRate = 0.14 * (totalReferrals * 1.1);
 
   if (loading) {
     return (

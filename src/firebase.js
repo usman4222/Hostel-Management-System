@@ -7,7 +7,7 @@ import '@firebase/firestore';
 
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  apiKey: "AIzaSyCL8sEBFJ6XAH2fppW2UYWbGPizgQtiu8A",
   authDomain: "coinmath-536d9.firebaseapp.com",
   projectId: "coinmath-536d9",
   storageBucket: "coinmath-536d9.appspot.com",

@@ -187,6 +187,16 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                   Add Ad Link
                 </NavLink>
               </li>
+              <li>
+                <NavLink
+                  to="/add-mining-rate"
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${pathname.includes('add-mining-rate') && 'bg-graydark dark:bg-meta-4'
+                    }`}
+                >
+                  <RiMoneyDollarCircleLine />
+                  Add Ad Link
+                </NavLink>
+              </li>
               {/* <!-- Menu Item Tables --> */}
 
               {/* <!-- Menu Item Settings --> */}

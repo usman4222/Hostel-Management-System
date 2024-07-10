@@ -101,7 +101,7 @@ const TableOne = () => {
                                 <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Email</th>
                                 <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Referral By Code</th>
                                 <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Referral Code</th>
-                                <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Coins</th>
+                                <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Mining Amount</th>
                                 <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Actions</th>
                             </tr>
                         </thead>

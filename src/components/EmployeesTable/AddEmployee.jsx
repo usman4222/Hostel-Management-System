@@ -6,8 +6,8 @@ import { db, storage } from '../../firebase';
 import DefaultLayout from '../../layout/DefaultLayout';
 import Breadcrumb from '../Breadcrumbs/Breadcrumb';
 import { FaImage } from 'react-icons/fa';
-import Spinner from '../Spinner'; 
-import { useSnackbar } from 'notistack'; 
+import Spinner from '../Spinner';
+import { useSnackbar } from 'notistack';
 
 const AddEmployee = () => {
     const navigate = useNavigate();
@@ -15,11 +15,12 @@ const AddEmployee = () => {
     const [Fname, setFname] = useState('');
     const [surName, setSurname] = useState('');
     const [email, setEmail] = useState('');
-    const [pin, setPin] = useState('');
     const [phone, setPhone] = useState('');
     const [refBy, setRefBy] = useState('');
     const [refCode, setRefCode] = useState('');
     const [coins, setCoins] = useState('');
+    const [baseWalletAddress, setBaseWalletAddress] = useState('');
+    const [mine, setMine] = useState('');
     const [image, setImage] = useState(null);
     const [chosenImage, setChosenImage] = useState(null);
     const [referralCodeExists, setReferralCodeExists] = useState(false);
@@ -28,7 +29,7 @@ const AddEmployee = () => {
 
     const handleProfileDetails = async (e) => {
         e.preventDefault();
-        setLoading(true); 
+        setLoading(true);
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         try {
@@ -60,6 +61,8 @@ const AddEmployee = () => {
                 referralByCode: refBy,
                 referralCode: refCode,
                 coins: coins,
+                baseWalletAddress: baseWalletAddress,
+                hourlyRate: mine,
                 profileImage: imageRef,
                 referrerID: referrerID
             });
@@ -72,6 +75,8 @@ const AddEmployee = () => {
             setRefBy('');
             setRefCode('');
             setCoins('');
+            setBaseWalletAddress();
+            setMine('');
             setChosenImage(null);
 
             navigate('/allemployees');
@@ -87,7 +92,7 @@ const AddEmployee = () => {
                 console.log('Other errors:', error.message);
             }
         } finally {
-            setLoading(false); 
+            setLoading(false);
         }
     };
 
@@ -199,12 +204,36 @@ const AddEmployee = () => {
                                 </div>
                                 <div className="mb-4.5">
                                     <label className="mb-2.5 block text-black dark:text-white">
-                                        Coins
+                                        Mining Amount
                                     </label>
                                     <input
                                         type="number"
                                         onChange={(e) => setCoins(e.target.value)}
                                         value={coins}
+                                        placeholder='Enter the number of coins'
+                                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                    />
+                                </div>
+                                <div className="mb-4.5">
+                                    <label className="mb-2.5 block text-black dark:text-white">
+                                        Mining Rate
+                                    </label>
+                                    <input
+                                        type="number"
+                                        onChange={(e) => setMine(e.target.value)}
+                                        value={mine}
+                                        placeholder='Enter the number of coins'
+                                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                    />
+                                </div>
+                                <div className="mb-4.5">
+                                    <label className="mb-2.5 block text-black dark:text-white">
+                                        Base Wallet Address
+                                    </label>
+                                    <input
+                                        type="text"
+                                        onChange={(e) => setBaseWalletAddress(e.target.value)}
+                                        value={baseWalletAddress}
                                         placeholder='Enter the number of coins'
                                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                     />

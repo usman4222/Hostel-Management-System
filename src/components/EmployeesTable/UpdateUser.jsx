@@ -20,10 +20,8 @@ const UpdateUser = () => {
     const [phone, setPhone] = useState('');
     const [refBy, setRefBy] = useState('');
     const [refCode, setRefCode] = useState('');
+    const [baseWalletAddress, setBaseWalletAddress] = useState('');
     const [image, setImage] = useState(null);
-    const [chosenImage, setChosenImage] = useState(null);
-    const [referralCodeExists, setReferralCodeExists] = useState(false);
-    const [referrerID, setReferrerID] = useState(null);
     const [coins, setCoins] = useState('');
     const { enqueueSnackbar } = useSnackbar();
     const [loading, setLoading] = useState(false);
@@ -37,12 +35,9 @@ const UpdateUser = () => {
                     const userData = docSnap.data();
                     setFname(userData.firstName);
                     setSurname(userData.surname);
-                    setEmail(userData.email);
-                    setPin(userData.pin);
                     setPhone(userData.phone);
+                    setBaseWalletAddress(userData.baseWalletAddress);
                     setCoins(userData.coins);
-                    setRefBy(userData.referralByCode);
-                    setRefCode(userData.referralCode);
                 } else {
                     console.log('No such document!');
                 }
@@ -83,6 +78,7 @@ const UpdateUser = () => {
                 // email: email,
                 // pin: pin,
                 phone: phone,
+                baseWalletAddress: baseWalletAddress,
                 coins: coins,
                 // referralByCode: refBy,
                 // referralCode: refCode,
@@ -273,6 +269,18 @@ const UpdateUser = () => {
                                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                     />
                                 </div>
+                                <div className="mb-4.5">
+                                    <label className="mb-2.5 block text-black dark:text-white">
+                                        Base Wallet Address
+                                    </label>
+                                    <input
+                                        type="text"
+                                        onChange={(e) => setBaseWalletAddress(e.target.value)}
+                                        value={baseWalletAddress}
+                                        placeholder='Enter Your Phone No.'
+                                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                    />
+                                </div>
                                 {/* <div className="mb-4.5">
                                     <label className="mb-2.5 block text-black dark:text-white">
                                         If User Referred by a friend? (Optional)
@@ -304,8 +312,8 @@ const UpdateUser = () => {
                                     disabled={loading}
                                     // style={{ cursor: refBy && !referralCodeExists ? 'not-allowed' : 'pointer' }}
                                     className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90">
-                                    
-                                
+
+
                                     {loading ? <Spinner /> : 'Update'}
 
                                 </button>

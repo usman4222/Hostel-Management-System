@@ -14,6 +14,7 @@ import AllBlogs from './components/Blogs/AllBogs';
 import UpdateBlog from './components/Blogs/UpdateBlog';
 import GuestRoute from './GuestRoute';
 import AddAd from './components/Ad/AddAd';
+import AddMining from './components/AddMiningRate/AddMining';
 
 function App() {
 
@@ -33,6 +34,7 @@ function App() {
           <Route path='/add-blog' element={<AddBlog />} />
           <Route path='/update-blog/:id' element={<UpdateBlog />} />
           <Route path='/add-ad' element={<AddAd />} />
+          <Route path='/add-mining-rate' element={<AddMining />} />
           <Route path='*' element={<NotFound />} />
         </Route>
         <Route element={<GuestRoute />}>
