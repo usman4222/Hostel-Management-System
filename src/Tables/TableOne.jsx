@@ -61,6 +61,8 @@ const TableOne = () => {
         { label: 'Referral By Code', key: 'referralByCode' },
         { label: 'Referral Code', key: 'referralCode' },
         { label: 'Coins', key: 'coins' },
+        { label: 'Mining Rate', key: 'hourlyRate' },
+        { label: 'Total Referrals', key: 'referralCount' },
     ];
 
     return (
@@ -102,6 +104,8 @@ const TableOne = () => {
                                 <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Referral By Code</th>
                                 <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Referral Code</th>
                                 <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Mining Amount</th>
+                                <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Mining Rate</th>
+                                <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Total Referrals</th>
                                 <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Actions</th>
                             </tr>
                         </thead>
@@ -128,6 +132,12 @@ const TableOne = () => {
                                     </td>
                                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                         <p className="text-black dark:text-white">{user.coins}</p>
+                                    </td>
+                                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                                        <p className="text-black dark:text-white">{user.hourlyRate}</p>
+                                    </td>
+                                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                                        <p className="text-black dark:text-white">{user.referralCount}</p>
                                     </td>
                                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                         <div className="flex items-center space-x-3.5">
