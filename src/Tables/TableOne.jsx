@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MdDeleteForever, MdEdit } from "react-icons/md";
 import { ImEye } from "react-icons/im";
-import { collection, getDocs, deleteDoc, doc, query, where, writeBatch } from 'firebase/firestore';
+import { collection, getDocs, deleteDoc, doc, query, where, writeBatch, getDoc, updateDoc, increment } from 'firebase/firestore';
 import { db } from '../firebase';
 import '@firebase/firestore';
 import { useSnackbar } from 'notistack';
@@ -31,9 +31,30 @@ const TableOne = () => {
 
     const deleteUserHandler = async (userId, referralCode) => {
         try {
-            await deleteDoc(doc(db, 'profiles', userId));
+            const userRef = doc(db, 'profiles', userId);
+            const userDoc = await getDoc(userRef);
+
+            if (!userDoc.exists()) {
+                enqueueSnackbar('User does not exist', { variant: 'error' });
+                return;
+            }
+
+            const userData = userDoc.data();
+            const referrerID = userData.referrerID;
+
+            // Delete the user document
+            await deleteDoc(userRef);
             enqueueSnackbar('User deleted successfully', { variant: 'success' });
 
+            // Decrement referral count for the referrer
+            if (referrerID) {
+                const referrerRef = doc(db, 'profiles', referrerID);
+                await updateDoc(referrerRef, {
+                    referralCount: increment(-1)
+                });
+            }
+
+            // Remove the user's referral information from profiles that were referred by this user
             const q = query(collection(db, 'profiles'), where('referralByCode', '==', referralCode));
             const querySnapshot = await getDocs(q);
 
