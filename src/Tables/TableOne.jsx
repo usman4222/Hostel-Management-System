@@ -152,13 +152,13 @@ const TableOne = () => {
                                         <p className="text-black dark:text-white">{user.referralCode}</p>
                                     </td>
                                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                        <p className="text-black dark:text-white">{user.coins}</p>
+                                        <p className="text-black dark:text-white">{user.coins || 0}</p>
                                     </td>
                                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                        <p className="text-black dark:text-white">{user.hourlyRate}</p>
+                                        <p className="text-black dark:text-white"> {(typeof user.hourlyRate === 'number' ? user.hourlyRate : 0).toFixed(3)}</p>
                                     </td>
                                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                        <p className="text-black dark:text-white">{user.referralCount}</p>
+                                        <p className="text-black dark:text-white">{user.referralCount || 0}</p>
                                     </td>
                                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                         <div className="flex items-center space-x-3.5">
