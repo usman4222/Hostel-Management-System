@@ -42,11 +42,9 @@ const TableOne = () => {
             const userData = userDoc.data();
             const referrerID = userData.referrerID;
 
-            // Delete the user document
             await deleteDoc(userRef);
             enqueueSnackbar('User deleted successfully', { variant: 'success' });
 
-            // Decrement referral count for the referrer
             if (referrerID) {
                 const referrerRef = doc(db, 'profiles', referrerID);
                 await updateDoc(referrerRef, {
@@ -54,7 +52,6 @@ const TableOne = () => {
                 });
             }
 
-            // Remove the user's referral information from profiles that were referred by this user
             const q = query(collection(db, 'profiles'), where('referralByCode', '==', referralCode));
             const querySnapshot = await getDocs(q);
 
@@ -155,7 +152,7 @@ const TableOne = () => {
                                         <p className="text-black dark:text-white">{user.coins || 0}</p>
                                     </td>
                                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                        <p className="text-black dark:text-white"> {(typeof user.hourlyRate === 'number' ? user.hourlyRate : 0).toFixed(3)}</p>
+                                        <p className="text-black dark:text-white"> { user.hourlyRate  || 0}</p>
                                     </td>
                                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                         <p className="text-black dark:text-white">{user.referralCount || 0}</p>

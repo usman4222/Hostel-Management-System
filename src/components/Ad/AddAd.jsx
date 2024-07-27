@@ -102,7 +102,7 @@ const AddAd = () => {
                                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                     />
                                 </div>
-                                <div className="mb-10">
+                                {/* <div className="mb-10">
                                     <label className="mb-2.5 mt-4 block text-black dark:text-white">
                                         Add Banner
                                     </label>
@@ -120,7 +120,7 @@ const AddAd = () => {
                                             />
                                         </label>
                                     </div>
-                                </div>
+                                </div> */}
                                 <button
                                     type="submit" className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90"
                                     disabled={loading}
