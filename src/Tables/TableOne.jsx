@@ -10,7 +10,9 @@ import { CSVLink } from 'react-csv';
 
 const TableOne = () => {
     const [users, setUsers] = useState([]);
+    const [displayedUsers, setDisplayedUsers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [showCount, setShowCount] = useState(100); // Number of users to show initially
     const { enqueueSnackbar } = useSnackbar();
 
     const fetchUsers = async () => {
@@ -18,6 +20,7 @@ const TableOne = () => {
             const querySnapshot = await getDocs(collection(db, 'profiles'));
             const usersList = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
             setUsers(usersList);
+            setDisplayedUsers(usersList.slice(0, showCount)); // Display initial set of users
             setLoading(false);
         } catch (error) {
             console.error("Error fetching users: ", error);
@@ -71,6 +74,12 @@ const TableOne = () => {
         }
     };
 
+    const handleShowMore = () => {
+        const newShowCount = showCount + 100; // Increase the count by 100
+        setShowCount(newShowCount);
+        setDisplayedUsers(users.slice(0, newShowCount)); // Update displayed users
+    };
+
     const csvHeaders = [
         { label: 'Wallet Address', key: 'baseWalletAddress' },
         { label: 'First Name', key: 'firstName' },
@@ -112,72 +121,78 @@ const TableOne = () => {
                         </h4>
                     </div>
                 ) : (
-                    <table className="w-full table-auto">
-                        <thead>
-                            <tr className="bg-gray-2 text-left dark:bg-meta-4">
-                                <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white">Wallet Address</th>
-                                <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white">First Name</th>
-                                <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Surname</th>
-                                <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Email</th>
-                                <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Referral By Code</th>
-                                <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Referral Code</th>
-                                <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Mining Amount</th>
-                                <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Mining Rate</th>
-                                <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Total Referrals</th>
-                                <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {users.map((user) => (
-                                <tr key={user.id}>
-                                    <td className="border-b border-[#eee] py-5 px-4 pl-9 dark:border-strokedark xl:pl-11">
-                                        <p className="text-black dark:text-white">{user.baseWalletAddress}</p>
-                                    </td>
-                                    <td className="border-b border-[#eee] py-5 px-4 pl-9 dark:border-strokedark xl:pl-11">
-                                        <p className="text-black dark:text-white">{user.firstName}</p>
-                                    </td>
-                                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                        <p className="text-black dark:text-white">{user.surname}</p>
-                                    </td>
-                                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                        <p className="text-black dark:text-white">{user.email}</p>
-                                    </td>
-                                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                        <p className="text-black dark:text-white">{user.referralByCode}</p>
-                                    </td>
-                                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                        <p className="text-black dark:text-white">{user.referralCode}</p>
-                                    </td>
-                                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                        <p className="text-black dark:text-white">{user.coins || 0}</p>
-                                    </td>
-                                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                        <p className="text-black dark:text-white"> { user.hourlyRate  || 0}</p>
-                                    </td>
-                                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                        <p className="text-black dark:text-white">{user.referralCount || 0}</p>
-                                    </td>
-                                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                        <div className="flex items-center space-x-3.5">
-                                            <button className="hover:text-primary" onClick={() => deleteUserHandler(user.id, user.referralCode)}>
-                                                <MdDeleteForever />
-                                            </button>
-                                            <Link to={`/update-user/${user.id}`}>
-                                                <button className="hover:text-primary">
-                                                    <MdEdit />
-                                                </button>
-                                            </Link>
-                                            <Link to={`/profile/${user.id}`}>
-                                                <button className="hover:text-primary">
-                                                    <ImEye />
-                                                </button>
-                                            </Link>
-                                        </div>
-                                    </td>
+                    <>
+                        <table className="w-full table-auto">
+                            <thead>
+                                <tr className="bg-gray-2 text-left dark:bg-meta-4">
+                                    <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white">Wallet Address</th>
+                                    <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white">First Name</th>
+                                    <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Surname</th>
+                                    <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Email</th>
+                                    <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Referral By Code</th>
+                                    <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Referral Code</th>
+                                    <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Mining Amount</th>
+                                    <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Mining Rate</th>
+                                    <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Total Referrals</th>
+                                    <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Actions</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {displayedUsers.map((user) => (
+                                    <tr key={user.id}>
+                                        <td className="border-b border-[#eee] py-5 px-4 pl-9 dark:border-strokedark xl:pl-11">
+                                            <p className="text-black dark:text-white">{user.baseWalletAddress}</p>
+                                        </td>
+                                        <td className="border-b border-[#eee] py-5 px-4 pl-9 dark:border-strokedark xl:pl-11">
+                                            <p className="text-black dark:text-white">{user.firstName}</p>
+                                        </td>
+                                        <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                                            <p className="text-black dark:text-white">{user.surname}</p>
+                                        </td>
+                                        <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                                            <p className="text-black dark:text-white">{user.email}</p>
+                                        </td>
+                                        <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                                            <p className="text-black dark:text-white">{user.referralByCode}</p>
+                                        </td>
+                                        <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                                            <p className="text-black dark:text-white">{user.referralCode}</p>
+                                        </td>
+                                        <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                                            <p className="text-black dark:text-white">{user.coins || 0}</p>
+                                        </td>
+                                        <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                                            <p className="text-black dark:text-white"> { user.hourlyRate  || 0}</p>
+                                        </td>
+                                        <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                                            <p className="text-black dark:text-white">{user.referralCount || 0}</p>
+                                        </td>
+                                        <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                                            <div className="flex items-center space-x-3.5">
+                                                <button className="hover:text-primary" onClick={() => deleteUserHandler(user.id, user.referralCode)}>
+                                                    <MdDeleteForever className="text-xl"/>
+                                                </button>
+                                                <Link to={`/view/${user.id}`} className="hover:text-primary">
+                                                    <ImEye className="text-base"/>
+                                                </Link>
+                                                <Link to={`/edit/${user.id}`} className="hover:text-primary">
+                                                    <MdEdit className="text-xl"/>
+                                                </Link>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                        <div className="flex justify-center my-6">
+                            <button
+                                onClick={handleShowMore}
+                                className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded"
+                            >
+                                Show More
+                            </button>
+                        </div>
+                    </>
                 )}
             </div>
         </div>
