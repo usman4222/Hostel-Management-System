@@ -12,7 +12,8 @@ const TableOne = () => {
     const [users, setUsers] = useState([]);
     const [displayedUsers, setDisplayedUsers] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [showCount, setShowCount] = useState(100); // Number of users to show initially
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(50); 
     const { enqueueSnackbar } = useSnackbar();
 
     const fetchUsers = async () => {
@@ -20,17 +21,27 @@ const TableOne = () => {
             const querySnapshot = await getDocs(collection(db, 'profiles'));
             const usersList = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
             setUsers(usersList);
-            setDisplayedUsers(usersList.slice(0, showCount)); // Display initial set of users
             setLoading(false);
+            updateDisplayedUsers(usersList, 1, itemsPerPage); 
         } catch (error) {
             console.error("Error fetching users: ", error);
             setLoading(false);
         }
     };
 
+    const updateDisplayedUsers = (usersList, page, perPage) => {
+        const startIndex = (page - 1) * perPage;
+        const endIndex = startIndex + perPage;
+        setDisplayedUsers(usersList.slice(startIndex, endIndex));
+    };
+
     useEffect(() => {
         fetchUsers();
     }, []);
+
+    useEffect(() => {
+        updateDisplayedUsers(users, currentPage, itemsPerPage);
+    }, [currentPage, itemsPerPage, users]);
 
     const deleteUserHandler = async (userId, referralCode) => {
         try {
@@ -74,10 +85,10 @@ const TableOne = () => {
         }
     };
 
-    const handleShowMore = () => {
-        const newShowCount = showCount + 100; // Increase the count by 100
-        setShowCount(newShowCount);
-        setDisplayedUsers(users.slice(0, newShowCount)); // Update displayed users
+    const handlePageChange = (newPage) => {
+        if (newPage > 0 && newPage <= Math.ceil(users.length / itemsPerPage)) {
+            setCurrentPage(newPage);
+        }
     };
 
     const csvHeaders = [
@@ -184,12 +195,23 @@ const TableOne = () => {
                                 ))}
                             </tbody>
                         </table>
-                        <div className="flex justify-center my-6">
+                        <div className="flex justify-between items-center my-6">
                             <button
-                                onClick={handleShowMore}
+                                onClick={() => handlePageChange(currentPage - 1)}
+                                disabled={currentPage === 1}
                                 className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded"
                             >
-                                Show More
+                                Previous
+                            </button>
+                            <span className="text-base text-center dark:text-white">
+                                Page {currentPage} of {Math.ceil(users.length / itemsPerPage)}
+                            </span>
+                            <button
+                                onClick={() => handlePageChange(currentPage + 1)}
+                                disabled={currentPage === Math.ceil(users.length / itemsPerPage)}
+                                className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded"
+                            >
+                                Next
                             </button>
                         </div>
                     </>
