@@ -25,6 +25,7 @@ const UpdateUser = () => {
     const [coins, setCoins] = useState('');
     const { enqueueSnackbar } = useSnackbar();
     const [loading, setLoading] = useState(false);
+    // const [hourlyRate, setHourlyRate] = useState("")
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -76,7 +77,7 @@ const UpdateUser = () => {
                 firstName: Fname,
                 surname: surName,
                 // email: email,
-                // pin: pin,
+                // hourlyRate: hourlyRate,
                 phone: phone,
                 baseWalletAddress: baseWalletAddress,
                 coins: coins,
@@ -232,13 +233,13 @@ const UpdateUser = () => {
                                 </div> */}
                                 {/* <div className="mb-4.5">
                                     <label className="mb-2.5 block text-black dark:text-white">
-                                        Pin
+                                        rate
                                     </label>
                                     <input
-                                        type="password"
-                                        onChange={(e) => setPin(e.target.value)}
-                                        value={pin}
-                                        placeholder='Enter Your Pin'
+                                        type="text"
+                                        onChange={(e) => setHourlyRate(e.target.value)}
+                                        value={hourlyRate}
+                                        placeholder='Enter Your rate'
                                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                     />
                                 </div> */}

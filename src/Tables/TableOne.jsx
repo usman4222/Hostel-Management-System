@@ -17,6 +17,8 @@ const TableOne = () => {
     const { enqueueSnackbar } = useSnackbar();
     const [keyword, setKeyword] = useState("");
 
+    console.log("usser",displayedUsers)
+
     const fetchUsers = async (searchKeyword = "") => {
         try {
             setLoading(true);
@@ -242,7 +244,7 @@ const TableOne = () => {
                                                 <Link to={`/view/${user.id}`} className="hover:text-primary">
                                                     <ImEye className="text-base" />
                                                 </Link>
-                                                <Link to={`/edit/${user.id}`} className="hover:text-primary">
+                                                <Link to={`/update-user/${user.id}`} className="hover:text-primary">
                                                     <MdEdit className="text-xl" />
                                                 </Link>
                                             </div>
