@@ -68,7 +68,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
       {/* <!-- SIDEBAR HEADER --> */}
       <div className="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
         <NavLink to="/">
-          <img className='w-20 rounded-full' src="https://res.cloudinary.com/glide/image/fetch/f_auto,h_150,c_limit/https%3A%2F%2Ffirebasestorage.googleapis.com%2Fv0%2Fb%2Fglide-prod.appspot.com%2Fo%2Ficon-images%252Fanonymous-b8b74b04-83a5-46d6-a2cc-25e0559d33df.png%3Falt%3Dmedia%26token%3D633ff17b-72a8-49f5-8f96-a06e64af4679" alt="Logo" />
+          <svg xmlns="http://www.w3.org/2000/svg" width="58" height="58" viewBox="0 0 24 24" id="hotel">
+            <path fill="none" d="M0 0h24v24H0V0z"></path>
+            <path fill="#007bff" d="M7 13c1.66 0 3-1.34 3-3S8.66 7 7 7s-3 1.34-3 3 1.34 3 3 3zm12-6h-6c-1.1 0-2 .9-2 2v5H3V6c0-.55-.45-1-1-1s-1 .45-1 1v13c0 .55.45 1 1 1s1-.45 1-1v-2h18v2c0 .55.45 1 1 1s1-.45 1-1v-8c0-2.21-1.79-4-4-4z"></path>
+          </svg>
+
+
         </NavLink>
 
         <button
@@ -139,7 +144,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                     }`}
                 >
                   <FaRegUser />
-                  Add User
+                  Add Student
                 </NavLink>
               </li>
               {/* <!-- Menu Item Calendar --> */}
@@ -152,7 +157,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                     }`}
                 >
                   <HiOutlineUsers />
-                  All Users
+                  All Student
                 </NavLink>
               </li>
               <li>
@@ -162,7 +167,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                     }`}
                 >
                   <TbArticle />
-                  Add Blogs
+                  Add School
                 </NavLink>
               </li>
               <li>
@@ -172,7 +177,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                     }`}
                 >
                   <GrArticle />
-                  All Blogs
+                  Attendance
                 </NavLink>
               </li>
               {/* <!-- Menu Item Profile --> */}
@@ -185,7 +190,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                     }`}
                 >
                   <RiMoneyDollarCircleLine />
-                  Add Ad Link
+                  Add Exam Details
                 </NavLink>
               </li>
               {/* <!-- Menu Item Tables --> */}

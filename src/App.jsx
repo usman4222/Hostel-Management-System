@@ -26,7 +26,7 @@ function App() {
           <Route path='/' element={<Dash />} />
           <Route path='/allemployees' element={<AllEmployees />} />
           <Route path='/adduser' element={<AddEmployee />} />
-          <Route path='/profile/:id' element={<Profile />} />
+          <Route path='/view/:id' element={<Profile />} />
           <Route path='/allblogs' element={<AllBlogs />} />
           <Route path='/update-user/:id' element={<UpdateUser />} />
           <Route path='/add-blog' element={<AddBlog />} />

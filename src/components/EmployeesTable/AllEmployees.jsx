@@ -7,7 +7,7 @@ import Breadcrumb from '../Breadcrumbs/Breadcrumb';
 const AllEmployees = () => {
   return (
     <DefaultLayout>
-      <Breadcrumb pageName="Users Table" />
+      <Breadcrumb pageName="Students Table" />
       <div className="flex flex-col gap-10">
         <TableOne />
       </div>

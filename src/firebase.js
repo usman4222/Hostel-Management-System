@@ -5,13 +5,13 @@ import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDwR-YajTt2bRugi2QRn3sah7wgupeVgBE",
-  authDomain: "coinmath-project.firebaseapp.com",
-  projectId: "coinmath-project",
-  storageBucket: "coinmath-project.appspot.com",
-  messagingSenderId: "164440406849",
-  appId: "1:164440406849:web:cf7a0e3a1a22c4b486bfc0",
-  measurementId: "G-2SK78D1L2D"
+  apiKey: "AIzaSyCo0H7TiqcJOcoMyeGygj0ei0p622gdB4Y",
+  authDomain: "hostel-management-system-10ad0.firebaseapp.com",
+  projectId: "hostel-management-system-10ad0",
+  storageBucket: "hostel-management-system-10ad0.appspot.com",
+  messagingSenderId: "81672728797",
+  appId: "1:81672728797:web:8f64437efe56475d2eeb34",
+  measurementId: "G-EW7571LPV7"
 };
 
 const app = initializeApp(firebaseConfig);

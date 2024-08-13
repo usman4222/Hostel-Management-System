@@ -21,27 +21,27 @@ const TableOne = () => {
 
     const fetchUsers = async (searchKeyword = "") => {
         try {
-            setLoading(true);
             let q;
             if (searchKeyword.trim()) {
                 q = query(
-                    collection(db, 'profiles'),
+                    collection(db, 'students'), // Ensure this is the correct collection
                     where('email', '==', searchKeyword.trim())
                 );
             } else {
-                q = collection(db, 'profiles');
+                q = collection(db, 'students');
             }
-
+    
             const querySnapshot = await getDocs(q);
             const usersList = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
             setUsers(usersList);
             setLoading(false);
-            setCurrentPage(1); 
+            setCurrentPage(1);
         } catch (error) {
             console.error("Error fetching users: ", error);
             setLoading(false);
         }
     };
+    
 
 
     const handleInputChange = (e) => {
@@ -66,7 +66,7 @@ const TableOne = () => {
 
     const deleteUserHandler = async (userId, referralCode) => {
         try {
-            const userRef = doc(db, 'profiles', userId);
+            const userRef = doc(db, 'students', userId);
             const userDoc = await getDoc(userRef);
 
             if (!userDoc.exists()) {
@@ -81,13 +81,13 @@ const TableOne = () => {
             enqueueSnackbar('User deleted successfully', { variant: 'success' });
 
             if (referrerID) {
-                const referrerRef = doc(db, 'profiles', referrerID);
+                const referrerRef = doc(db, 'students', referrerID);
                 await updateDoc(referrerRef, {
                     referralCount: increment(-1)
                 });
             }
 
-            const q = query(collection(db, 'profiles'), where('referralByCode', '==', referralCode));
+            const q = query(collection(db, 'students'), where('referralByCode', '==', referralCode));
             const querySnapshot = await getDocs(q);
 
             const batch = writeBatch(db);
@@ -112,6 +112,22 @@ const TableOne = () => {
         }
     };
 
+    const sanitizeAndFormatCoins = (coinsString) => {
+        const str = String(coinsString);
+    
+        const firstValidDecimalIndex = str.indexOf('.');
+    
+        let sanitizedCoins = str;
+    
+        if (firstValidDecimalIndex !== -1) {
+            sanitizedCoins = str.slice(0, firstValidDecimalIndex + 1) + 
+                             str.slice(firstValidDecimalIndex + 1).replace(/\./g, '');
+        }
+    
+        const numberValue = Number(sanitizedCoins);
+        return isNaN(numberValue) ? '0.00' : numberValue.toFixed(3);
+    };
+
     const csvHeaders = [
         { label: 'Wallet Address', key: 'baseWalletAddress' },
         { label: 'First Name', key: 'firstName' },
@@ -129,7 +145,7 @@ const TableOne = () => {
             <div className="max-w-full overflow-x-auto">
                 <div className='flex flex-col justify-between md:flex-row'>
                     <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">
-                        All Users
+                        All Students
                     </h4>
                     <div className="mb-10 mt-5 md:mt-0 md:mb-0">
                         <div className="relative">
@@ -194,15 +210,13 @@ const TableOne = () => {
                         <table className="w-full table-auto">
                             <thead>
                                 <tr className="bg-gray-2 text-left dark:bg-meta-4">
-                                    <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white">Wallet Address</th>
-                                    <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white">First Name</th>
-                                    <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Surname</th>
-                                    <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Email</th>
-                                    <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Referral By Code</th>
-                                    <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Referral Code</th>
-                                    <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Mining Amount</th>
-                                    <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Mining Rate</th>
-                                    <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Total Referrals</th>
+                                    <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white">Name</th>
+                                    <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white">Father Name</th>
+                                    <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">B Form No.</th>
+                                    <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Reg No.</th>
+                                    <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Behaviour</th>
+                                    <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Residence Duration</th>
+                                    <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Studey Progress</th>
                                     <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Actions</th>
                                 </tr>
                             </thead>
@@ -210,31 +224,25 @@ const TableOne = () => {
                                 {displayedUsers.map((user) => (
                                     <tr key={user.id}>
                                         <td className="border-b border-[#eee] py-5 px-4 pl-9 dark:border-strokedark xl:pl-11">
-                                            <p className="text-black dark:text-white">{user.baseWalletAddress}</p>
+                                            <p className="text-black dark:text-white">{user.name}</p>
                                         </td>
                                         <td className="border-b border-[#eee] py-5 px-4 pl-9 dark:border-strokedark xl:pl-11">
-                                            <p className="text-black dark:text-white">{user.firstName}</p>
+                                            <p className="text-black dark:text-white">{user.fName}</p>
                                         </td>
                                         <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                            <p className="text-black dark:text-white">{user.surname}</p>
+                                            <p className="text-black dark:text-white">{user.bFormNo}</p>
                                         </td>
                                         <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                            <p className="text-black dark:text-white">{user.email}</p>
+                                            <p className="text-black dark:text-white">{user.regNo}</p>
                                         </td>
                                         <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                            <p className="text-black dark:text-white">{user.referralByCode}</p>
+                                            <p className="text-black dark:text-white">{user.behaviour}</p>
                                         </td>
                                         <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                            <p className="text-black dark:text-white">{user.referralCode}</p>
+                                            <p className="text-black dark:text-white">{user.residenceDuration}</p>
                                         </td>
                                         <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                            <p className="text-black dark:text-white">{user.coins || 0}</p>
-                                        </td>
-                                        <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                            <p className="text-black dark:text-white"> {user.hourlyRate || 0}</p>
-                                        </td>
-                                        <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                            <p className="text-black dark:text-white">{user.referralCount || 0}</p>
+                                            <p className="text-black dark:text-white">{user.studyProgress}</p>
                                         </td>
                                         <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                             <div className="flex items-center space-x-3.5">
