@@ -42,7 +42,7 @@ const AddEmployee = () => {
 
             const q = query(collection(db, 'students'), where('bFormNo', '==', bFormNo));
             const querySnapshot = await getDocs(q);
-    
+
             if (!querySnapshot.empty) {
                 enqueueSnackbar('B-Form No. already exists. Please enter a unique B-Form No.', { variant: 'error' });
                 setLoading(false);
@@ -70,7 +70,6 @@ const AddEmployee = () => {
             });
             enqueueSnackbar("Document successfully written!", { variant: 'success' });
 
-            // Clear form
             setName('');
             setFName('');
             setRegNo('');
@@ -130,6 +129,7 @@ const AddEmployee = () => {
                                     type="text"
                                     onChange={(e) => setName(e.target.value)}
                                     value={name}
+                                    required
                                     placeholder="Enter your first name"
                                     className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                 />
@@ -143,6 +143,7 @@ const AddEmployee = () => {
                                     type="text"
                                     onChange={(e) => setFName(e.target.value)}
                                     value={fName}
+                                    required
                                     placeholder="Enter your last name"
                                     className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                 />
@@ -168,6 +169,7 @@ const AddEmployee = () => {
                                     type="text"
                                     onChange={(e) => setBFormNo(e.target.value)}
                                     value={bFormNo}
+                                    required
                                     placeholder='Enter B-Form No.'
                                     className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                 />
@@ -250,6 +252,7 @@ const AddEmployee = () => {
                                     type="text"
                                     onChange={(e) => setResidenceDuration(e.target.value)}
                                     value={residenceDuration}
+                                    required
                                     placeholder='Enter Duration of Residence'
                                     className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                 />
@@ -262,6 +265,7 @@ const AddEmployee = () => {
                                     type="text"
                                     onChange={(e) => setRelation(e.target.value)}
                                     value={relation}
+                                    required
                                     placeholder="Enter gurdian relation"
                                     className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                 />
@@ -274,6 +278,7 @@ const AddEmployee = () => {
                                     type="text"
                                     onChange={(e) => setGurdianPhone(e.target.value)}
                                     value={gurdianPhone}
+                                    required
                                     placeholder="Enter Phone No."
                                     className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                 />
@@ -290,6 +295,7 @@ const AddEmployee = () => {
                                     <select
                                         onChange={(e) => setStudentClass(e.target.value)}
                                         value={studentClass}
+                                        required
                                         className={`relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary ${isOptionSelected ? 'text-black dark:text-white' : ''
                                             }`}
                                     >
@@ -364,6 +370,7 @@ const AddEmployee = () => {
                                     <select
                                         onChange={(e) => setSchool(e.target.value)}
                                         value={school}
+                                        required
                                         className={`relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary ${isOptionSelected ? 'text-black dark:text-white' : ''
                                             }`}
                                     >

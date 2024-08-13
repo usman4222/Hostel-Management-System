@@ -13,6 +13,7 @@ import AllBlogs from './components/Blogs/AllBogs';
 import UpdateBlog from './components/Blogs/UpdateBlog';
 import GuestRoute from './GuestRoute';
 import AddAd from './components/Ad/AddAd';
+import MarkAttendance from './components/Attendance/MarkAttendance';
 
 function App() {
 
@@ -27,7 +28,7 @@ function App() {
           <Route path='/allemployees' element={<AllEmployees />} />
           <Route path='/adduser' element={<AddEmployee />} />
           <Route path='/view/:id' element={<Profile />} />
-          <Route path='/allblogs' element={<AllBlogs />} />
+          <Route path='/markattendance' element={<MarkAttendance />} />
           <Route path='/update-user/:id' element={<UpdateUser />} />
           <Route path='/add-blog' element={<AddBlog />} />
           <Route path='/update-blog/:id' element={<UpdateBlog />} />

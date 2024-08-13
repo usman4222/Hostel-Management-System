@@ -7,8 +7,9 @@ import { db } from '../firebase';
 import '@firebase/firestore';
 import { useSnackbar } from 'notistack';
 import { CSVLink } from 'react-csv';
+import { FaUserCircle } from 'react-icons/fa';
 
-const TableOne = () => {
+const TableOne = ({ profileImage }) => {
     const [users, setUsers] = useState([]);
     const [displayedUsers, setDisplayedUsers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -17,20 +18,19 @@ const TableOne = () => {
     const { enqueueSnackbar } = useSnackbar();
     const [keyword, setKeyword] = useState("");
 
-    console.log("usser",displayedUsers)
 
     const fetchUsers = async (searchKeyword = "") => {
         try {
             let q;
             if (searchKeyword.trim()) {
                 q = query(
-                    collection(db, 'students'), // Ensure this is the correct collection
+                    collection(db, 'students'),
                     where('email', '==', searchKeyword.trim())
                 );
             } else {
                 q = collection(db, 'students');
             }
-    
+
             const querySnapshot = await getDocs(q);
             const usersList = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
             setUsers(usersList);
@@ -41,7 +41,7 @@ const TableOne = () => {
             setLoading(false);
         }
     };
-    
+
 
 
     const handleInputChange = (e) => {
@@ -110,22 +110,6 @@ const TableOne = () => {
         if (newPage > 0 && newPage <= Math.ceil(users.length / itemsPerPage)) {
             setCurrentPage(newPage);
         }
-    };
-
-    const sanitizeAndFormatCoins = (coinsString) => {
-        const str = String(coinsString);
-    
-        const firstValidDecimalIndex = str.indexOf('.');
-    
-        let sanitizedCoins = str;
-    
-        if (firstValidDecimalIndex !== -1) {
-            sanitizedCoins = str.slice(0, firstValidDecimalIndex + 1) + 
-                             str.slice(firstValidDecimalIndex + 1).replace(/\./g, '');
-        }
-    
-        const numberValue = Number(sanitizedCoins);
-        return isNaN(numberValue) ? '0.00' : numberValue.toFixed(3);
     };
 
     const csvHeaders = [
@@ -210,13 +194,14 @@ const TableOne = () => {
                         <table className="w-full table-auto">
                             <thead>
                                 <tr className="bg-gray-2 text-left dark:bg-meta-4">
-                                    <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white">Name</th>
-                                    <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white">Father Name</th>
+                                    <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white">Profile Img</th>
                                     <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">B Form No.</th>
                                     <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Reg No.</th>
-                                    <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Behaviour</th>
-                                    <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Residence Duration</th>
-                                    <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Studey Progress</th>
+                                    <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white">Name</th>
+                                    <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white">Father Name</th>
+                                    <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Class</th>
+                                    {/* <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Residence Duration</th> */}
+                                    <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Study Progress</th>
                                     <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Actions</th>
                                 </tr>
                             </thead>
@@ -224,10 +209,13 @@ const TableOne = () => {
                                 {displayedUsers.map((user) => (
                                     <tr key={user.id}>
                                         <td className="border-b border-[#eee] py-5 px-4 pl-9 dark:border-strokedark xl:pl-11">
-                                            <p className="text-black dark:text-white">{user.name}</p>
-                                        </td>
-                                        <td className="border-b border-[#eee] py-5 px-4 pl-9 dark:border-strokedark xl:pl-11">
-                                            <p className="text-black dark:text-white">{user.fName}</p>
+                                            <div className="w-8 h-8 rounded-full flex items-center justify-center">
+                                                {user.profileImage ? (
+                                                    <img src={user.profileImage} alt="User" className="w-full h-full object-cover rounded-full" />
+                                                ) : (
+                                                    <FaUserCircle size={32} color="white" />
+                                                )}
+                                            </div>
                                         </td>
                                         <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                             <p className="text-black dark:text-white">{user.bFormNo}</p>
@@ -235,12 +223,18 @@ const TableOne = () => {
                                         <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                             <p className="text-black dark:text-white">{user.regNo}</p>
                                         </td>
-                                        <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                            <p className="text-black dark:text-white">{user.behaviour}</p>
+                                        <td className="border-b border-[#eee] py-5 px-4 pl-9 dark:border-strokedark xl:pl-11">
+                                            <p className="text-black dark:text-white">{user.name}</p>
+                                        </td>
+                                        <td className="border-b border-[#eee] py-5 px-4 pl-9 dark:border-strokedark xl:pl-11">
+                                            <p className="text-black dark:text-white">{user.fName}</p>
                                         </td>
                                         <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                                            <p className="text-black dark:text-white">{user.studentClass}</p>
+                                        </td>
+                                        {/* <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                             <p className="text-black dark:text-white">{user.residenceDuration}</p>
-                                        </td>
+                                        </td> */}
                                         <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                             <p className="text-black dark:text-white">{user.studyProgress}</p>
                                         </td>
