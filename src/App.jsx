@@ -8,12 +8,12 @@ import NotFound from './pages/NotFound';
 import Profile from './pages/Profile';
 import AddEmployee from './components/EmployeesTable/AddEmployee';
 import UpdateUser from './components/EmployeesTable/UpdateUser';
-import AddBlog from './components/Blogs/AddBlog';
-import AllBlogs from './components/Blogs/AllBogs';
-import UpdateBlog from './components/Blogs/UpdateBlog';
+// import AddBlog from './components/Blogs/AddBlog';
+// import UpdateBlog from './components/Class/UpdateBlog';
 import GuestRoute from './GuestRoute';
 import AddAd from './components/Ad/AddAd';
 import MarkAttendance from './components/Attendance/MarkAttendance';
+import AddClass from './components/Class/AddClass';
 
 function App() {
 
@@ -30,8 +30,8 @@ function App() {
           <Route path='/view/:id' element={<Profile />} />
           <Route path='/markattendance' element={<MarkAttendance />} />
           <Route path='/update-user/:id' element={<UpdateUser />} />
-          <Route path='/add-blog' element={<AddBlog />} />
-          <Route path='/update-blog/:id' element={<UpdateBlog />} />
+          <Route path='/add-class' element={<AddClass />} />
+          {/* <Route path='/update-blog/:id' element={<UpdateBlog />} /> */}
           <Route path='/add-ad' element={<AddAd />} />
           <Route path='*' element={<NotFound />} />
         </Route>
