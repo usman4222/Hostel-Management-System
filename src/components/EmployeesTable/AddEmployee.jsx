@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -31,8 +31,37 @@ const AddEmployee = () => {
     const [chosenImage, setChosenImage] = useState(null);
     const [selectedOption, setSelectedOption] = useState('');
     const [isOptionSelected, setIsOptionSelected] = useState(false);
-
+    const [classes, setClasses] = useState([]);
     const [loading, setLoading] = useState(false);
+
+    console.log(classes);
+    
+    useEffect(() => {
+        const fetchClasses = async () => {
+            try {
+                const q = query(collection(db, 'classes'));
+                const querySnapshot = await getDocs(q);
+    
+                if (querySnapshot.empty) {
+                    console.log('No classes found');
+                    return;
+                }
+    
+                querySnapshot.forEach((doc) => {
+                    console.log('Document data:', doc.data());
+                });
+    
+                const classesList = querySnapshot.docs.map(doc => doc.data().className || 'No name');
+                console.log('Fetched classes:', classesList);
+                setClasses(classesList);
+            } catch (error) {
+                console.error('Error fetching classes:', error);
+            }
+        };
+    
+        fetchClasses();
+    }, []);
+
 
     const handleProfileDetails = async (e) => {
         e.preventDefault();
@@ -299,45 +328,14 @@ const AddEmployee = () => {
                                         className={`relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary ${isOptionSelected ? 'text-black dark:text-white' : ''
                                             }`}
                                     >
-                                        <option value="" disabled className="text-body dark:text-bodydark">
+                                        <option value="" disabled>
                                             Select your class
                                         </option>
-                                        <option value="Class 1" className="text-body dark:text-bodydark">
-                                            Class 1
-                                        </option>
-                                        <option value="Class 2" className="text-body dark:text-bodydark">
-                                            Class 2
-                                        </option>
-                                        <option value="Class 3" className="text-body dark:text-bodydark">
-                                            Class 3
-                                        </option>
-                                        <option value="Class 4" className="text-body dark:text-bodydark">
-                                            Class 4
-                                        </option>
-                                        <option value="Class 5" className="text-body dark:text-bodydark">
-                                            Class 5
-                                        </option>
-                                        <option value="Class 6" className="text-body dark:text-bodydark">
-                                            Class 6
-                                        </option>
-                                        <option value="Class 7" className="text-body dark:text-bodydark">
-                                            Class 7
-                                        </option>
-                                        <option value="Class 8" className="text-body dark:text-bodydark">
-                                            Class 8
-                                        </option>
-                                        <option value="Class 9" className="text-body dark:text-bodydark">
-                                            Class 9
-                                        </option>
-                                        <option value="Class 10" className="text-body dark:text-bodydark">
-                                            Class 10
-                                        </option>
-                                        <option value="Class 11" className="text-body dark:text-bodydark">
-                                            Class 11
-                                        </option>
-                                        <option value="Class 12" className="text-body dark:text-bodydark">
-                                            Class 12
-                                        </option>
+                                        {classes.map((cls, index) => (
+                                            <option key={index} value={cls}>
+                                                {cls}
+                                            </option>
+                                        ))}
                                     </select>
                                     <span className="absolute top-1/2 right-4 z-30 -translate-y-1/2">
                                         <svg
