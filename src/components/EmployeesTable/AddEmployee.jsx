@@ -8,6 +8,7 @@ import Breadcrumb from '../Breadcrumbs/Breadcrumb';
 import { FaImage } from 'react-icons/fa';
 import Spinner from '../Spinner';
 import { useSnackbar } from 'notistack';
+import FetchedClasses from '../FetchedClassess';
 
 const AddEmployee = () => {
     const navigate = useNavigate();
@@ -45,64 +46,40 @@ const AddEmployee = () => {
 
     // console.log(classes);
 
-    useEffect(() => {
-        const fetchClasses = async () => {
-            try {
-                const q = query(collection(db, 'classes'));
-                const querySnapshot = await getDocs(q);
-
-                if (querySnapshot.empty) {
-                    console.log('No classes found');
-                    return;
-                }
-
-                querySnapshot.forEach((doc) => {
-                    console.log('Document data:', doc.data());
-                });
-
-                const classesList = querySnapshot.docs.map(doc => doc.data().className || 'No name');
-                console.log('Fetched classes:', classesList);
-                setClasses(classesList);
-            } catch (error) {
-                console.error('Error fetching classes:', error);
-            }
-        };
-
-        fetchClasses();
-    }, []);
+    // <FetchedClasses />
 
 
     const handleProfileDetails = async (e) => {
         e.preventDefault();
         setLoading(true);
-    
+
         try {
             const q = query(collection(db, 'students'), where('bFormNo', '==', bFormNo));
             const querySnapshot = await getDocs(q);
-    
+
             if (!querySnapshot.empty) {
                 enqueueSnackbar('B-Form No. already exists. Please enter a unique B-Form No.', { variant: 'error' });
                 setLoading(false);
                 return;
             }
-    
+
             const classQuery = query(collection(db, 'classes'), where('className', '==', studentClass));
             const classSnapshot = await getDocs(classQuery);
-    
+
             if (classSnapshot.empty) {
                 enqueueSnackbar('Class not found. Please ensure the class is added first.', { variant: 'error' });
                 setLoading(false);
                 return;
             }
-    
+
             const classDoc = classSnapshot.docs[0];
             const classId = classDoc.id
-            const subjects = classDoc.data().subjects || [];
-    
+            // const subjects = classDoc.data().subjects || [];
+
             const profileImageRef = await uploadImage(image);
             const deathCertificateRef = await uploadImage(chosenDeathCertificateImg);
             const gurdianIdCardRef = await uploadImage(chosenGurdianIdCardImg);
-    
+
             await addDoc(collection(db, 'students'), {
                 name,
                 fName,
@@ -113,7 +90,7 @@ const AddEmployee = () => {
                 residenceDuration,
                 classId,
                 studentClass,
-                subjects,  
+                // subjects,
                 school,
                 relation,
                 gurdianPhone,
@@ -121,9 +98,9 @@ const AddEmployee = () => {
                 deathCertificateImg: deathCertificateRef,
                 gurdianIdCardImg: gurdianIdCardRef
             });
-    
+
             enqueueSnackbar("Document successfully written!", { variant: 'success' });
-    
+
             setName('');
             setFName('');
             setRegNo('');
@@ -139,7 +116,7 @@ const AddEmployee = () => {
             setChosenDeathCertificateImg(null);
             setChosenGurdianIdCardImg(null);
             setChosenImage(null);
-    
+
             navigate('/allemployees');
         } catch (error) {
             console.error('Error storing students details:', error);
@@ -148,9 +125,9 @@ const AddEmployee = () => {
             setLoading(false);
         }
     };
-    
-    
-    
+
+
+
 
     const uploadImage = async (image) => {
         if (!image) return '';
@@ -169,6 +146,7 @@ const AddEmployee = () => {
     return (
         <DefaultLayout>
             <Breadcrumb pageName="Add New Student" />
+            <FetchedClasses setClasses={setClasses} />
             <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
                 <div className="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
                     <h3 className="font-medium text-black dark:text-white">
@@ -360,8 +338,8 @@ const AddEmployee = () => {
                                         </option>
                                         {classes.length > 0 ? (
                                             classes.map((cls, index) => (
-                                                <option key={index} value={cls}>
-                                                    {cls}
+                                                <option key={index} value={cls.id}>
+                                                    {typeof cls.className === 'string' ? cls.className : JSON.stringify(cls.className)}
                                                 </option>
                                             ))
                                         ) : (
@@ -369,6 +347,7 @@ const AddEmployee = () => {
                                                 No classes available.
                                             </option>
                                         )}
+
                                     </select>
                                     <span className="absolute top-1/2 right-4 z-30 -translate-y-1/2">
                                         <svg

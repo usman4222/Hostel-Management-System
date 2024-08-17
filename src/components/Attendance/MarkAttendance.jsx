@@ -65,6 +65,10 @@ const MarkAttendance = () => {
     };
 
 
+    // const handleStatusChange = (userId, status) => {
+    //     setAttendanceStatuses(prev => ({ ...prev, [userId]: status }));
+    // };
+
     const handleSaveAttendance = async () => {
         if (!selectedDate) {
             enqueueSnackbar('Please select a date before saving attendance.', { variant: 'warning' });
@@ -72,30 +76,36 @@ const MarkAttendance = () => {
         }
 
         try {
-            const batch = writeBatch(db);
             setLoading(true);
+
+            const batch = writeBatch(db);
+
             for (const user of displayedUsers) {
-                const docRef = doc(db, 'students', user.id);
-                const status = attendanceStatuses[user.id];
-
-                if (!status) {
-                    console.warn(`No status set for user ${user.id}`);
-                    continue;
-                }
-
-
+                const docRef = doc(db, 'attendance', user.id);
                 const docSnap = await getDoc(docRef);
-                const currentData = docSnap.exists() ? docSnap.data() : {};
-                const currentAttendance = currentData.attendance || {};
-
-                const updatedAttendance = {
-                    ...currentAttendance,
-                    [selectedDate]: status
+                const newAttendanceRecord = {
+                    date: selectedDate,
+                    status: attendanceStatuses[user.id]
                 };
 
-                batch.update(docRef, {
-                    attendance: updatedAttendance
-                });
+                if (docSnap.exists()) {
+                    // If the document exists, check if the date already exists
+                    const existingData = docSnap.data();
+                    const attendanceIndex = existingData.attendance.findIndex(record => record.date === selectedDate);
+
+                    if (attendanceIndex > -1) {
+                        // Update the existing record for the selected date
+                        existingData.attendance[attendanceIndex] = newAttendanceRecord;
+                    } else {
+                        // Add the new attendance record to the array
+                        existingData.attendance.push(newAttendanceRecord);
+                    }
+
+                    batch.update(docRef, { attendance: existingData.attendance });
+                } else {
+                    // If the document does not exist, create it
+                    batch.set(docRef, { attendance: [newAttendanceRecord] });
+                }
             }
 
             await batch.commit();
@@ -107,6 +117,7 @@ const MarkAttendance = () => {
             enqueueSnackbar('Error saving attendance.', { variant: 'error' });
         }
     };
+    
 
     const handlePageChange = (newPage) => {
         if (newPage > 0 && newPage <= Math.ceil(users.length / itemsPerPage)) {
