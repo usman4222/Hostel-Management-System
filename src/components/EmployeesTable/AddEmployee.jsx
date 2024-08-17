@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../../firebase';
@@ -34,23 +34,32 @@ const AddEmployee = () => {
     const [classes, setClasses] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    console.log(classes);
-    
+    const handleClassChange = (e) => {
+        const selectedClass = e.target.value;
+        setStudentClass(selectedClass);
+    };
+
+    const handleAddClassClick = () => {
+        navigate('/add-class');
+    };
+
+    // console.log(classes);
+
     useEffect(() => {
         const fetchClasses = async () => {
             try {
                 const q = query(collection(db, 'classes'));
                 const querySnapshot = await getDocs(q);
-    
+
                 if (querySnapshot.empty) {
                     console.log('No classes found');
                     return;
                 }
-    
+
                 querySnapshot.forEach((doc) => {
                     console.log('Document data:', doc.data());
                 });
-    
+
                 const classesList = querySnapshot.docs.map(doc => doc.data().className || 'No name');
                 console.log('Fetched classes:', classesList);
                 setClasses(classesList);
@@ -58,7 +67,7 @@ const AddEmployee = () => {
                 console.error('Error fetching classes:', error);
             }
         };
-    
+
         fetchClasses();
     }, []);
 
@@ -66,21 +75,34 @@ const AddEmployee = () => {
     const handleProfileDetails = async (e) => {
         e.preventDefault();
         setLoading(true);
-
+    
         try {
-
             const q = query(collection(db, 'students'), where('bFormNo', '==', bFormNo));
             const querySnapshot = await getDocs(q);
-
+    
             if (!querySnapshot.empty) {
                 enqueueSnackbar('B-Form No. already exists. Please enter a unique B-Form No.', { variant: 'error' });
                 setLoading(false);
                 return;
             }
-
+    
+            const classQuery = query(collection(db, 'classes'), where('className', '==', studentClass));
+            const classSnapshot = await getDocs(classQuery);
+    
+            if (classSnapshot.empty) {
+                enqueueSnackbar('Class not found. Please ensure the class is added first.', { variant: 'error' });
+                setLoading(false);
+                return;
+            }
+    
+            const classDoc = classSnapshot.docs[0];
+            const classId = classDoc.id
+            const subjects = classDoc.data().subjects || [];
+    
             const profileImageRef = await uploadImage(image);
             const deathCertificateRef = await uploadImage(chosenDeathCertificateImg);
             const gurdianIdCardRef = await uploadImage(chosenGurdianIdCardImg);
+    
             await addDoc(collection(db, 'students'), {
                 name,
                 fName,
@@ -89,7 +111,9 @@ const AddEmployee = () => {
                 studyProgress,
                 behaviour,
                 residenceDuration,
+                classId,
                 studentClass,
+                subjects,  
                 school,
                 relation,
                 gurdianPhone,
@@ -97,8 +121,9 @@ const AddEmployee = () => {
                 deathCertificateImg: deathCertificateRef,
                 gurdianIdCardImg: gurdianIdCardRef
             });
+    
             enqueueSnackbar("Document successfully written!", { variant: 'success' });
-
+    
             setName('');
             setFName('');
             setRegNo('');
@@ -114,7 +139,7 @@ const AddEmployee = () => {
             setChosenDeathCertificateImg(null);
             setChosenGurdianIdCardImg(null);
             setChosenImage(null);
-
+    
             navigate('/allemployees');
         } catch (error) {
             console.error('Error storing students details:', error);
@@ -123,6 +148,9 @@ const AddEmployee = () => {
             setLoading(false);
         }
     };
+    
+    
+    
 
     const uploadImage = async (image) => {
         if (!image) return '';
@@ -322,20 +350,25 @@ const AddEmployee = () => {
 
                                 <div className="relative z-20 bg-transparent dark:bg-form-input">
                                     <select
-                                        onChange={(e) => setStudentClass(e.target.value)}
+                                        onChange={handleClassChange}
                                         value={studentClass}
                                         required
-                                        className={`relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary ${isOptionSelected ? 'text-black dark:text-white' : ''
-                                            }`}
+                                        className={`relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary ${isOptionSelected ? 'text-black dark:text-white' : ''}`}
                                     >
                                         <option value="" disabled>
                                             Select your class
                                         </option>
-                                        {classes.map((cls, index) => (
-                                            <option key={index} value={cls}>
-                                                {cls}
+                                        {classes.length > 0 ? (
+                                            classes.map((cls, index) => (
+                                                <option key={index} value={cls}>
+                                                    {cls}
+                                                </option>
+                                            ))
+                                        ) : (
+                                            <option value="" disabled>
+                                                No classes available.
                                             </option>
-                                        ))}
+                                        )}
                                     </select>
                                     <span className="absolute top-1/2 right-4 z-30 -translate-y-1/2">
                                         <svg
