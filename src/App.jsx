@@ -11,7 +11,7 @@ import UpdateUser from './components/EmployeesTable/UpdateUser';
 // import AddBlog from './components/Blogs/AddBlog';
 // import UpdateBlog from './components/Class/UpdateBlog';
 import GuestRoute from './GuestRoute';
-import AddExam from './components/Exam/AddExam';
+// import AddExam from './components/Exam/AddExam';
 import MarkAttendance from './components/Attendance/MarkAttendance';
 import AddClass from './components/Class/AddClass';
 
@@ -32,7 +32,7 @@ function App() {
           <Route path='/update-user/:id' element={<UpdateUser />} />
           <Route path='/add-class' element={<AddClass />} />
           {/* <Route path='/update-blog/:id' element={<UpdateBlog />} /> */}
-          <Route path='/add-exam' element={<AddExam />} />
+          {/* <Route path='/add-exam' element={<AddExam />} /> */}
           <Route path='*' element={<NotFound />} />
         </Route>
         <Route element={<GuestRoute />}>
