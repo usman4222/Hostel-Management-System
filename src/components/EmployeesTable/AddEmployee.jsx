@@ -44,7 +44,7 @@ const AddEmployee = () => {
         navigate('/add-class');
     };
 
-    // console.log(classes);
+    console.log(classes);
 
     // <FetchedClasses />
 
@@ -54,6 +54,7 @@ const AddEmployee = () => {
         setLoading(true);
 
         try {
+            // Check if B-Form No. already exists
             const q = query(collection(db, 'students'), where('bFormNo', '==', bFormNo));
             const querySnapshot = await getDocs(q);
 
@@ -63,23 +64,37 @@ const AddEmployee = () => {
                 return;
             }
 
-            const classQuery = query(collection(db, 'classes'), where('className', '==', studentClass));
-            const classSnapshot = await getDocs(classQuery);
 
-            if (classSnapshot.empty) {
-                enqueueSnackbar('Class not found. Please ensure the class is added first.', { variant: 'error' });
-                setLoading(false);
-                return;
-            }
+            // Fetch class details
+            // const classQuery = query(collection(db, 'classes'), where('className', '==', studentClass.trim()));
+            // const classSnapshot = await getDocs(classQuery);
 
-            const classDoc = classSnapshot.docs[0];
-            const classId = classDoc.id
-            // const subjects = classDoc.data().subjects || [];
+            // Log the size and data for debugging
+            // console.log('Class Snapshot size:', classSnapshot.size);
+            // classSnapshot.forEach(doc => console.log('Class Document Data:', doc.data()));
 
+            // if (classSnapshot.empty) {
+            //     enqueueSnackbar('Class not found. Please ensure the class is added first.', { variant: 'error' });
+            //     setLoading(false);
+            //     return;
+            // }
+
+            // const classDoc = classSnapshot.docs[0];
+            // if (!classDoc) {
+            //     enqueueSnackbar('Class document is undefined.', { variant: 'error' });
+            //     setLoading(false);
+            //     return;
+            // }
+
+            // const classId = classDoc.id;
+            // console.log("This is class ID", classId);
+
+            // Handle file uploads
             const profileImageRef = await uploadImage(image);
             const deathCertificateRef = await uploadImage(chosenDeathCertificateImg);
             const gurdianIdCardRef = await uploadImage(chosenGurdianIdCardImg);
 
+            // Add student document
             await addDoc(collection(db, 'students'), {
                 name,
                 fName,
@@ -88,9 +103,8 @@ const AddEmployee = () => {
                 studyProgress,
                 behaviour,
                 residenceDuration,
-                classId,
-                studentClass,
-                // subjects,
+                // classId,
+                // studentClass,
                 school,
                 relation,
                 gurdianPhone,
@@ -101,6 +115,7 @@ const AddEmployee = () => {
 
             enqueueSnackbar("Document successfully written!", { variant: 'success' });
 
+            // Reset form fields
             setName('');
             setFName('');
             setRegNo('');
@@ -119,12 +134,17 @@ const AddEmployee = () => {
 
             navigate('/allemployees');
         } catch (error) {
+            console.log(error.message);
             console.error('Error storing students details:', error);
             enqueueSnackbar('Error storing students details.', { variant: 'error' });
         } finally {
             setLoading(false);
         }
     };
+
+
+
+
 
 
 
@@ -320,7 +340,7 @@ const AddEmployee = () => {
                             </div>
                         </div>
                         <div className="mb-2.5 flex flex-col gap-6 xl:flex-row">
-                            <div className="mb-4.5 xl:w-1/2">
+                            {/* <div className="mb-4.5 xl:w-1/2">
                                 <label className="mb-2.5 block text-black dark:text-white">
                                     {' '}
                                     Select Class{' '}
@@ -368,6 +388,26 @@ const AddEmployee = () => {
                                             </g>
                                         </svg>
                                     </span>
+                                </div>
+                            </div> */}
+                            <div className="w-full mb-4.5 xl:w-1/2">
+                                <div className="relative flex mb-2.5 text-black dark:text-white">
+                                    <h6 className="text-[16px]">Gurdian ID Card Image</h6>
+                                </div>
+                                <div className="pb-5">
+                                    <div className="flex items-center justify-center">
+                                        <label className="w-full flex gap-3 items-center rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 focus-within:ring-2 text-white cursor-pointer focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary hover:ring-1 hover:ring-[#363636]/30 transition-all ease-in-out">
+                                            <FaImage className="text-xl mb-1 text-[#5F5F5F]" />
+                                            <span className="text-[#5F5F5F]">
+                                                {chosenGurdianIdCardImg || 'Choose an image...'}
+                                            </span>
+                                            <input
+                                                type="file"
+                                                className="opacity-0 w-0 h-0"
+                                                onChange={handleFileChange(setGurdianIdCardImg, setChosenGurdianIdCardImg)}
+                                            />
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
                             <div className="mb-4.5 xl:w-1/2">
@@ -417,7 +457,7 @@ const AddEmployee = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="w-full mb-4.5">
+                        {/* <div className="w-full mb-4.5">
                             <div className="relative flex mb-2.5 text-black dark:text-white">
                                 <h6 className="text-[16px]">Gurdian ID Card Image</h6>
                             </div>
@@ -436,7 +476,7 @@ const AddEmployee = () => {
                                     </label>
                                 </div>
                             </div>
-                        </div>
+                        </div> */}
                         <button className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90">
                             {loading ? <Spinner /> : ' Onboard Student'}
                         </button>
