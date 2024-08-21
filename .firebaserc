@@ -1,16 +1,5 @@
 {
   "projects": {
-    "default": "coinmath-project"
-  },
-  "targets": {
-    "coinmath-project": {
-      "hosting": {
-        "admin": [
-          "coinmath-admin"
-        ]
-      }
-    }
-  },
-  "etags": {},
-  "dataconnectEmulatorConfig": {}
+    "default": "hostel-management-system-10ad0"
+  }
 }

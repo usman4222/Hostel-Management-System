@@ -20,6 +20,7 @@ const AddEmployee = () => {
     const [studyProgress, setStudyProgress] = useState('');
     const [behaviour, setBehaviour] = useState('');
     const [residenceDuration, setResidenceDuration] = useState('');
+    const [admissionDate, setAdmissionDate] = useState('');
     const [deathCertificateImg, setDeathCertificateImg] = useState(null);
     const [chosenDeathCertificateImg, setChosenDeathCertificateImg] = useState(null);
     const [school, setSchool] = useState('');
@@ -33,7 +34,7 @@ const AddEmployee = () => {
     const [loading, setLoading] = useState(false);
     const [classes, setClasses] = useState([]);
     const [studentClass, setStudentClass] = useState('');
-    const [classId, setClassId] = useState(''); 
+    const [classId, setClassId] = useState('');
     const [className, setClassName] = useState('');
 
 
@@ -63,7 +64,7 @@ const AddEmployee = () => {
 
         const selectedClass = classes.find(classItem => classItem.id === selectedClassId);
         if (selectedClass) {
-            setClassId(selectedClass.id); 
+            setClassId(selectedClass.id);
             setClassName(selectedClass.className);
         }
     };
@@ -105,8 +106,9 @@ const AddEmployee = () => {
                 studyProgress,
                 behaviour,
                 residenceDuration,
-                classId, 
-                studentClass: className, 
+                admissionDate,
+                classId,
+                studentClass: className,
                 school,
                 relation,
                 gurdianPhone,
@@ -123,6 +125,7 @@ const AddEmployee = () => {
             setBFormNo('');
             setStudyProgress('');
             setBehaviour('');
+            setAdmissionDate('')
             setResidenceDuration('');
             setClassId('');
             setClassName('');
@@ -223,7 +226,7 @@ const AddEmployee = () => {
                             </div>
                         </div>
                         <div className="mb-2.5 flex flex-col gap-6 xl:flex-row">
-                            <div className="w-full xl:w-1/2">
+                            {/* <div className="w-full xl:w-1/2">
                                 <div className="relative mb-2.5 flex text-black dark:text-white">
                                     <h6 className="text-[16px]">Profile Image</h6>
                                 </div>
@@ -242,6 +245,18 @@ const AddEmployee = () => {
                                         </label>
                                     </div>
                                 </div>
+                            </div> */}
+                            <div className="mb-4.5 xl:w-1/2">
+                                <label className="mb-2.5 block text-black dark:text-white">
+                                    Admission Date
+                                </label>
+                                <input
+                                    type="date"
+                                    onChange={(e) => setAdmissionDate(e.target.value)}
+                                    value={admissionDate}
+                                    required
+                                    className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                />
                             </div>
                             <div className="w-full xl:w-1/2">
                                 <div className="relative flex mb-2.5 text-black dark:text-white">

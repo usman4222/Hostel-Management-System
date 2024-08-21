@@ -14,6 +14,8 @@ import GuestRoute from './GuestRoute';
 import AddExam from './components/Exam/AddExam';
 import MarkAttendance from './components/Attendance/MarkAttendance';
 import AddClass from './components/Class/AddClass';
+import AttendanceDetails from './components/Attendance/AttendanceDetails';
+import StudentAttendanceDetails from './components/Attendance/StudentAttendanceDetails';
 
 function App() {
 
@@ -29,6 +31,8 @@ function App() {
           <Route path='/adduser' element={<AddEmployee />} />
           <Route path='/view/:id' element={<Profile />} />
           <Route path='/markattendance' element={<MarkAttendance />} />
+          <Route path='/attendance-detail' element={<AttendanceDetails />} />
+          <Route path='/attendance/view/:userId' element={<StudentAttendanceDetails />} />
           <Route path='/update-user/:id' element={<UpdateUser />} />
           <Route path='/add-class' element={<AddClass />} />
           {/* <Route path='/update-blog/:id' element={<UpdateBlog />} /> */}

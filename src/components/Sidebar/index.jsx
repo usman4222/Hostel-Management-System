@@ -180,6 +180,16 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                   Attendance
                 </NavLink>
               </li>
+              <li>
+                <NavLink
+                  to="/attendance-detail"
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${pathname.includes('attendance-detail') && 'bg-graydark dark:bg-meta-4'
+                    }`}
+                >
+                  <GrArticle />
+                  Attendance Details
+                </NavLink>
+              </li>
               {/* <!-- Menu Item Profile --> */}
 
               {/* <!-- Menu Item Tables --> */}
