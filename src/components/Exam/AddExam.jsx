@@ -5,6 +5,8 @@ import DefaultLayout from '../../layout/DefaultLayout';
 import Breadcrumb from '../Breadcrumbs/Breadcrumb';
 import Spinner from '../Spinner';
 import FetchedClasses from '../FetchedClassess';
+import { enqueueSnackbar, useSnackbar } from 'notistack';
+import { useNavigate } from 'react-router-dom';
 
 const AddExam = () => {
     const [loading, setLoading] = useState(false);
@@ -17,6 +19,8 @@ const AddExam = () => {
     const [students, setStudents] = useState([]);
     const [classes, setClasses] = useState([]);
     const [subjects, setSubjects] = useState([]);
+    const navigate = useNavigate();
+    const { enqueueSnackbar } = useSnackbar();
 
     useEffect(() => {
         const fetchStudents = async () => {
@@ -107,7 +111,13 @@ const AddExam = () => {
                 totalMarks: parseFloat(totalMarks),
                 obtainedMarks: parseFloat(obtainedMarks),
             });
-            console.log("Exam added successfully.");
+            enqueueSnackbar("Exam added successfully!", { variant: 'success' });
+            setSelectedClass("")
+            setSelectedStudent("")
+            setSelectedSubject("")
+            setExamTerm("")
+            setTotalMarks("")
+            setObtainedMarks("")
         } catch (error) {
             console.error("Error adding exam:", error);
         }

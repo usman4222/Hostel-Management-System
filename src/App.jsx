@@ -18,6 +18,7 @@ import AttendanceDetails from './components/Attendance/AttendanceDetails';
 import StudentAttendanceDetails from './components/Attendance/StudentAttendanceDetails';
 import AllClasses from './components/Class/AllClasses';
 import UpdateClass from './components/Class/UpdateClass';
+import AllExams from './components/Exam/AllExams';
 
 function App() {
 
@@ -39,8 +40,8 @@ function App() {
           <Route path='/add-class' element={<AddClass />} />
           <Route path='/all-class' element={<AllClasses />} />
           <Route path='/update-class/:id' element={<UpdateClass />} />
-          {/* <Route path='/update-blog/:id' element={<UpdateBlog />} /> */}
           <Route path='/add-exam' element={<AddExam />} />
+          <Route path='/all-exams' element={<AllExams />} />
           <Route path='*' element={<NotFound />} />
         </Route>
         <Route element={<GuestRoute />}>
