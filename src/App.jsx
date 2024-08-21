@@ -16,6 +16,8 @@ import MarkAttendance from './components/Attendance/MarkAttendance';
 import AddClass from './components/Class/AddClass';
 import AttendanceDetails from './components/Attendance/AttendanceDetails';
 import StudentAttendanceDetails from './components/Attendance/StudentAttendanceDetails';
+import AllClasses from './components/Class/AllClasses';
+import UpdateClass from './components/Class/UpdateClass';
 
 function App() {
 
@@ -35,6 +37,8 @@ function App() {
           <Route path='/attendance/view/:userId' element={<StudentAttendanceDetails />} />
           <Route path='/update-user/:id' element={<UpdateUser />} />
           <Route path='/add-class' element={<AddClass />} />
+          <Route path='/all-class' element={<AllClasses />} />
+          <Route path='/update-class/:id' element={<UpdateClass />} />
           {/* <Route path='/update-blog/:id' element={<UpdateBlog />} /> */}
           <Route path='/add-exam' element={<AddExam />} />
           <Route path='*' element={<NotFound />} />
