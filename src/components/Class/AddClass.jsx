@@ -4,6 +4,7 @@ import { db } from '../../firebase';
 import DefaultLayout from '../../layout/DefaultLayout';
 import Breadcrumb from '../Breadcrumbs/Breadcrumb';
 import { useSnackbar } from 'notistack';
+import Spinner from '../Spinner';
 
 const AddClass = () => {
     const { enqueueSnackbar } = useSnackbar();
@@ -141,13 +142,12 @@ const AddClass = () => {
                                         </div>
                                     ))}
                                 </div>
-
                                 <button
                                     type="submit"
                                     className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90"
                                     disabled={loading}
                                 >
-                                    Add Class
+                                    {loading ? <Spinner /> : '  Add Class'}
                                 </button>
                             </div>
                         </form>
