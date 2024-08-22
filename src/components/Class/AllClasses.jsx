@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MdDeleteForever, MdEdit } from "react-icons/md";
 import { ImEye } from "react-icons/im";
-import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { collection, getDocs, deleteDoc, doc, query, where } from 'firebase/firestore';
 import '@firebase/firestore';
 import { db } from '../../firebase';
 import DefaultLayout from '../../layout/DefaultLayout';
@@ -11,14 +11,18 @@ import { useSnackbar } from 'notistack';
 
 const AllClasses = () => {
     const [classes, setClasses] = useState([]);
+    const [filteredClasses, setFilteredClasses] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [selectedClass, setSelectedClass] = useState("");
     const { enqueueSnackbar } = useSnackbar();
+
 
     const fetchClasses = async () => {
         try {
             const querySnapshot = await getDocs(collection(db, 'classes'));
-            const classessList = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-            setClasses(classessList);
+            const classList = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+            setClasses(classList);
+            setFilteredClasses(classList);
             setLoading(false);
         } catch (error) {
             console.error("Error fetching classes: ", error);
@@ -26,18 +30,34 @@ const AllClasses = () => {
         }
     };
 
+    const filterClasses = () => {
+        if (selectedClass.trim()) {
+            const filtered = classes.filter(cls => cls.className === selectedClass.trim());
+            setFilteredClasses(filtered);
+        } else {
+            setFilteredClasses(classes); 
+        }
+    };
+
     useEffect(() => {
         fetchClasses();
     }, []);
 
-    const deleteUserHandler = async (userId) => {
+    useEffect(() => {
+        filterClasses();
+    }, [selectedClass, classes]);
+
+    const handleClassChange = (e) => {
+        setSelectedClass(e.target.value);
+    };
+
+    const deleteUserHandler = async (classId) => {
         try {
-            await deleteDoc(doc(db, 'classes', userId));
+            await deleteDoc(doc(db, 'classes', classId));
             enqueueSnackbar('Class deleted successfully', { variant: 'success' });
-            console.log(`Blog with ID ${userId} deleted successfully`);
-            fetchBlogs();
+            fetchClasses(); 
         } catch (error) {
-            console.error('Error deleting user or updating referrals: ', error);
+            console.error('Error deleting class: ', error);
         }
     };
 
@@ -52,16 +72,33 @@ const AllClasses = () => {
                                 All Classes
                             </h4>
                         </div>
+                        <div className="mb-4 w-50">
+                            <label className="mb-2 block text-black dark:text-white">
+                                Filter by Class
+                            </label>
+                            <select
+                                value={selectedClass}
+                                onChange={handleClassChange}
+                                className="w-full rounded border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                            >
+                                <option value="">Select a class</option>
+                                {[...new Set(classes.map(cls => cls.className))].map((className, index) => (
+                                    <option key={index} value={className}>
+                                        {className}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                         {loading ? (
                             <div className='border-t border-[#eee] py-5 px-4 pl-9 dark:border-strokedark'>
                                 <h4 className="mb-6 text-md font-semibold text-center text-black dark:text-white">
                                     Loading...
                                 </h4>
                             </div>
-                        ) : classes.length === 0 ? (
+                        ) : filteredClasses.length === 0 ? (
                             <div className='border-t border-[#eee] py-5 px-4 pl-9 dark:border-strokedark'>
                                 <h4 className="mb-6 text-md font-semibold text-center text-black dark:text-white">
-                                    No class Available
+                                    No classes available
                                 </h4>
                             </div>
                         ) : (
@@ -74,7 +111,7 @@ const AllClasses = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {classes.map((classItem) => (
+                                    {filteredClasses.map((classItem) => (
                                         <tr key={classItem.id}>
                                             <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                                 <p className="text-black dark:text-white">{classItem.className}</p>
@@ -102,7 +139,7 @@ const AllClasses = () => {
                                             </td>
                                         </tr>
                                     ))}
-                                </tbody>  
+                                </tbody>
                             </table>
                         )}
                     </div>
