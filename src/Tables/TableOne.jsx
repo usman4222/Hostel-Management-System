@@ -71,7 +71,7 @@ const TableOne = () => {
         setKeyword(e.target.value);
     };
 
-    const fetchUsers = async () => {
+    const fetchUsersByClass = async () => {
         try {
             const studentsRef = collection(db, 'students');
             let q = query(studentsRef);
@@ -96,7 +96,7 @@ const TableOne = () => {
     }, []);
 
     useEffect(() => {
-        fetchUsers();
+        fetchUsersByClass();
     }, [selectedClass]);
 
     useEffect(() => {
@@ -116,10 +116,6 @@ const TableOne = () => {
 
     const handleClassChange = (e) => {
         setSelectedClass(e.target.value);
-    };
-
-    const handleSearchChange = (e) => {
-        setSearchQuery(e.target.value);
     };
 
     const handlePageChange = (newPage) => {

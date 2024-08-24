@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FaUserCircle } from 'react-icons/fa';
-import { collection, getDocs, getDoc, doc } from 'firebase/firestore';
+import { collection, getDocs, getDoc, doc, query, where } from 'firebase/firestore';
 import { db } from '../../firebase';
 import DefaultLayout from '../../layout/DefaultLayout';
 import Breadcrumb from '../Breadcrumbs/Breadcrumb';
@@ -13,7 +13,12 @@ const AttendanceDetails = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(50);
     const [attendanceStatuses, setAttendanceStatuses] = useState({});
-    
+    const [searchQuery, setSearchQuery] = useState("");
+    const [classes, setClasses] = useState([]);
+    const [keyword, setKeyword] = useState("");
+    const [classInput, setClassInput] = useState("");
+    const [selectedClass, setSelectedClass] = useState("");
+
     useEffect(() => {
         fetchUsers();
     }, []);
@@ -25,6 +30,14 @@ const AttendanceDetails = () => {
     useEffect(() => {
         fetchAttendanceStatuses();
     }, [displayedUsers]);
+
+    const handleInputChange = (e) => {
+        setKeyword(e.target.value);
+    };
+
+    const handleClassChange = (e) => {
+        setSelectedClass(e.target.value);
+    };
 
     const fetchUsers = async () => {
         try {
@@ -39,15 +52,88 @@ const AttendanceDetails = () => {
         }
     };
 
+    const fetchUsersByName = async () => {
+        try {
+            let q = collection(db, 'students');
+
+            if (keyword.trim() || classInput.trim()) {
+                let filters = [];
+                if (keyword.trim()) {
+                    filters.push(where('name', '>=', keyword.trim()));
+                    filters.push(where('name', '<=', keyword.trim() + '\uf8ff'));
+                }
+                if (classInput.trim()) {
+                    filters.push(where('studentClass', '==', classInput.trim()));
+                }
+
+                if (filters.length > 0) {
+                    q = query(q, ...filters);
+                }
+            }
+
+            const querySnapshot = await getDocs(q);
+            const usersList = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+            setUsers(usersList);
+            setLoading(false);
+            setCurrentPage(1);
+        } catch (error) {
+            console.error("Error fetching users: ", error);
+            setLoading(false);
+        }
+    };
+    useEffect(() => {
+        fetchUsersByName();
+    }, [keyword, classInput]);
+
+    const fetchUsersByClass = async () => {
+        try {
+            const studentsRef = collection(db, 'students');
+            let q = query(studentsRef);
+
+            if (selectedClass.trim()) {
+                q = query(q, where('studentClass', '==', selectedClass.trim()));
+            }
+
+            const querySnapshot = await getDocs(q);
+            const usersList = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+            setUsers(usersList);
+            setLoading(false);
+            setCurrentPage(1);
+        } catch (error) {
+            console.error("Error fetching users: ", error);
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchUsersByClass();
+    }, [selectedClass]);
+
     const updateDisplayedUsers = (usersList, page, perPage) => {
         const startIndex = (page - 1) * perPage;
         const endIndex = startIndex + perPage;
         setDisplayedUsers(usersList.slice(startIndex, endIndex));
     };
 
+    const fetchClasses = async () => {
+        try {
+            const querySnapshot = await getDocs(collection(db, 'classes'));
+            const classessList = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+            setClasses(classessList);
+            setLoading(false);
+        } catch (error) {
+            console.error("Error fetching classes: ", error);
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchClasses();
+    }, []);
+
     const fetchAttendanceStatuses = async () => {
         try {
-            const today = new Date().toISOString().split('T')[0]; 
+            const today = new Date().toISOString().split('T')[0];
             const statuses = {};
 
             for (const user of displayedUsers) {
@@ -84,6 +170,35 @@ const AttendanceDetails = () => {
                         <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">
                             All Students
                         </h4>
+                    </div>
+                    <div className='flex-col md:flex md:flex-row gap-20'>
+                        <div className="mb-4 w-50">
+                            <label className="mb-2 block text-black dark:text-white">
+                                Search by Name
+                            </label>
+                            <input
+                                type="text"
+                                value={keyword}
+                                onChange={handleInputChange}
+                                placeholder="Enter name"
+                                className="w-full rounded border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                            />
+                        </div>
+                        <div className="mb-4 w-50">
+                            <label className="mb-2 block text-black dark:text-white">
+                                Filter by Class
+                            </label>
+                            <select
+                                value={selectedClass}
+                                onChange={handleClassChange}
+                                className="w-full rounded border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                            >
+                                <option value="">Select a class</option>
+                                {classes.map((cls) => (
+                                    <option key={cls.id} value={cls.className}>{cls.className}</option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
                     {loading ? (
                         <div className='border-t border-[#eee] py-5 px-4 pl-9 dark:border-strokedark'>

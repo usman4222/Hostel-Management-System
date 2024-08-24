@@ -84,26 +84,23 @@ const MarkAttendance = () => {
                 const docRef = doc(db, 'attendance', user.id);
                 const docSnap = await getDoc(docRef);
                 const newAttendanceRecord = {
+                    userId: user.id,
                     date: selectedDate,
                     status: attendanceStatuses[user.id]
                 };
 
                 if (docSnap.exists()) {
-                    // If the document exists, check if the date already exists
                     const existingData = docSnap.data();
                     const attendanceIndex = existingData.attendance.findIndex(record => record.date === selectedDate);
 
                     if (attendanceIndex > -1) {
-                        // Update the existing record for the selected date
                         existingData.attendance[attendanceIndex] = newAttendanceRecord;
                     } else {
-                        // Add the new attendance record to the array
                         existingData.attendance.push(newAttendanceRecord);
                     }
 
                     batch.update(docRef, { attendance: existingData.attendance });
                 } else {
-                    // If the document does not exist, create it
                     batch.set(docRef, { attendance: [newAttendanceRecord] });
                 }
             }
