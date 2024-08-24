@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom'; // Import useParams to extract user ID from the URL
-import { collection, query, where, getDocs, doc } from 'firebase/firestore';
+import { useParams } from 'react-router-dom';
+import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import DefaultLayout from '../../layout/DefaultLayout';
 import Breadcrumb from '../Breadcrumbs/Breadcrumb';
+import AttendanceGraph from '../../Charts/AttendnaceGraph';
+
 
 const StudentAttendanceDetails = () => {
-    const { userId } = useParams(); 
-    console.log(userId);
-    
+    const { userId } = useParams();
+    const [userName, setUserName] = useState('');
+
     const [userAttendance, setUserAttendance] = useState({
         presentCount: 0,
         absentCount: 0,
@@ -23,52 +25,78 @@ const StudentAttendanceDetails = () => {
         }
     }, [userId]);
 
+    const fetchUserData = async (userId) => {
+        try {
+            const userDocRef = doc(db, 'students', userId);
+            const userDocSnap = await getDoc(userDocRef);
+
+            if (userDocSnap.exists()) {
+                const userData = userDocSnap.data();
+
+                setUserName(userData.name || 'No Name');
+            } else {
+                setUserName('No Name');
+            }
+        } catch (error) {
+            console.error("Error fetching user data: ", error);
+        }
+    };
+
+    useEffect(() => {
+        if (userId) {
+            fetchUserData(userId);
+        }
+    }, [userId]);
+
     const fetchUserAttendance = async (userId) => {
         try {
-            const today = new Date();
-            const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+            const docRef = doc(db, 'attendance', userId);
+            const docSnap = await getDoc(docRef);
 
-            const userDocRef = doc(db, 'attendance', userId);
-            const q = query(
-                collection(userDocRef, 'attendanceRecords'),
-                where('date', '>=', firstDayOfMonth)
-            );
+            if (docSnap.exists()) {
+                const attendanceData = docSnap.data().attendance || [];
 
-            const querySnapshot = await getDocs(q);
-            const attendanceData = querySnapshot.docs.map(doc => doc.data());
+                const currentMonth = new Date().getMonth();
+                const currentYear = new Date().getFullYear();
 
-            console.log('Fetched Attendance Data:', attendanceData); 
+                let presentCount = 0;
+                let absentCount = 0;
+                let leaveCount = 0;
 
-            let presentCount = 0;
-            let absentCount = 0;
-            let leaveCount = 0;
+                attendanceData.forEach(record => {
+                    const recordDate = new Date(record.date);
+                    const recordMonth = recordDate.getMonth();
+                    const recordYear = recordDate.getFullYear();
 
-            attendanceData.forEach(record => {
-                if (record.status === 'Present') presentCount++;
-                if (record.status === 'Absent') absentCount++;
-                if (record.status === 'Leave') leaveCount++;
-            });
+                    if (recordMonth === currentMonth && recordYear === currentYear) {
+                        if (record.status === 'Present') presentCount++;
+                        if (record.status === 'Absent') absentCount++;
+                        if (record.status === 'Leave') leaveCount++;
+                    }
+                });
 
-            const totalEntries = presentCount + absentCount + leaveCount;
-            const presentPercentage = totalEntries > 0 ? ((presentCount / totalEntries) * 100).toFixed(2) : 0;
+                const totalEntries = presentCount + absentCount + leaveCount;
+                const presentPercentage = totalEntries > 0 ? ((presentCount / totalEntries) * 100).toFixed(2) : 0;
 
-            console.log('Attendance Counts:', {
-                presentCount,
-                absentCount,
-                leaveCount,
-                totalEntries,
-                presentPercentage
-            }); 
-
-            setUserAttendance({
-                presentCount,
-                absentCount,
-                leaveCount,
-                totalEntries,
-                presentPercentage,
-            });
+                setUserAttendance({
+                    presentCount,
+                    absentCount,
+                    leaveCount,
+                    totalEntries,
+                    presentPercentage,
+                });
+            } else {
+                console.log("No such document!");
+                setUserAttendance({
+                    presentCount: 0,
+                    absentCount: 0,
+                    leaveCount: 0,
+                    totalEntries: 0,
+                    presentPercentage: 0,
+                });
+            }
         } catch (error) {
-            console.error('Error fetching attendance:', error);
+            console.error("Error fetching attendance details: ", error);
         }
     };
 
@@ -78,7 +106,7 @@ const StudentAttendanceDetails = () => {
             <div className="flex flex-col gap-10">
                 <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
                     <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">
-                        Attendance Details
+                        {userName}'s Attendance Details
                     </h4>
                     <div className="max-w-full overflow-x-auto lg:overflow-x-hidden">
                         <table className="w-full table-auto">
@@ -111,7 +139,7 @@ const StudentAttendanceDetails = () => {
                                 </tr>
                             </tbody>
                         </table>
-                        {/* You can add an AttendanceGraph component here if needed */}
+                        <AttendanceGraph userAttendance={userAttendance} />
                     </div>
                 </div>
             </div>
