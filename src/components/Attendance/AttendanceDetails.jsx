@@ -18,6 +18,7 @@ const AttendanceDetails = () => {
     const [keyword, setKeyword] = useState("");
     const [classInput, setClassInput] = useState("");
     const [selectedClass, setSelectedClass] = useState("");
+    const [reasons, setReasons] = useState({});
 
     useEffect(() => {
         fetchUsers();
@@ -135,6 +136,7 @@ const AttendanceDetails = () => {
         try {
             const today = new Date().toISOString().split('T')[0];
             const statuses = {};
+            const reasonsMap = {};
 
             for (const user of displayedUsers) {
                 const docRef = doc(db, 'attendance', user.id);
@@ -144,16 +146,20 @@ const AttendanceDetails = () => {
                     const attendanceRecords = docSnap.data().attendance || [];
                     const todayRecord = attendanceRecords.find(record => record.date === today);
                     statuses[user.id] = todayRecord ? todayRecord.status : 'Not Marked';
+                    reasonsMap[user.id] = todayRecord ? todayRecord.reason || '' : '';
                 } else {
                     statuses[user.id] = 'Not Marked';
+                    reasonsMap[user.id] = '';
                 }
             }
 
             setAttendanceStatuses(statuses);
+            setReasons(reasonsMap);
         } catch (error) {
             console.error('Error fetching attendance statuses:', error);
         }
     };
+
 
     const handlePageChange = (newPage) => {
         if (newPage > 0 && newPage <= Math.ceil(users.length / itemsPerPage)) {
@@ -221,6 +227,7 @@ const AttendanceDetails = () => {
                                         <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white">Name</th>
                                         <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Class</th>
                                         <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Today Status</th>
+                                        <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Reason</th>
                                         <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Detail</th>
                                     </tr>
                                 </thead>
@@ -238,6 +245,9 @@ const AttendanceDetails = () => {
                                             </td>
                                             <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                                 <p className="text-black dark:text-white">{attendanceStatuses[user.id] || 'Not Marked'}</p>
+                                            </td>
+                                            <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                                                <p className="text-black dark:text-white">{reasons[user.id] || 'No Reason'}</p>
                                             </td>
                                             <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                                 <Link

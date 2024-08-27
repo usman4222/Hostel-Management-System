@@ -4,8 +4,11 @@ import DefaultLayout from '../../layout/DefaultLayout';
 import Breadcrumb from '../Breadcrumbs/Breadcrumb';
 import { useSnackbar } from 'notistack';
 import { db } from '../../firebase';
-import { collection, doc, getDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, updateDoc } from 'firebase/firestore';
 import StudentSearchAttendanceGraph from '../../Charts/StudentSearchAttendanceGraph';
+import EditAttendanceDialog from './EditAttendanceDialog';
+import { MdEdit } from 'react-icons/md';
+import { IconButton } from '@mui/material';
 
 
 const AttendanceSearchTable = () => {
@@ -16,7 +19,8 @@ const AttendanceSearchTable = () => {
     const [endDate, setEndDate] = useState('');
     const [loading, setLoading] = useState(false);
     const [userAttendance, setUserAttendance] = useState([]);
-
+    const [selectedRecord, setSelectedRecord] = useState(null); // State for the selected record
+    const [openDialog, setOpenDialog] = useState(false); 
 
     const fetchUserData = async (userId) => {
         try {
@@ -92,6 +96,91 @@ const AttendanceSearchTable = () => {
 
     const attendanceData = processAttendanceData(userAttendance);
 
+
+
+    
+    
+    const normalizeDate = (date) => {
+        return new Date(date).toISOString().split('T')[0]; // Format: YYYY-MM-DD
+    };
+    
+
+    const handleUpdate = async (updatedRecord) => {
+        console.log('Updated Record:', updatedRecord);
+        console.log('Current Attendance:', userAttendance);
+    
+        const normalizeDate = (date) => new Date(date).toISOString().split('T')[0];
+        const normalizedUpdatedDate = normalizeDate(updatedRecord.date);
+    
+        console.log('Normalized Updated Date:', normalizedUpdatedDate);
+    
+        const updatedRecordId = `${updatedRecord.userId}_${normalizedUpdatedDate}`;
+    
+        // Print out the `userAttendance` to debug
+        userAttendance.forEach(record => {
+            const normalizedRecordDate = normalizeDate(record.date);
+            const recordId = `${record.userId}_${normalizedRecordDate}`;
+            console.log(`Existing Record ID: ${recordId}`);
+        });
+    
+        const recordIndex = userAttendance.findIndex(record => {
+            const normalizedRecordDate = normalizeDate(record.date);
+            const recordId = `${record.userId}_${normalizedRecordDate}`;
+            console.log(`Comparing Existing Record ID: ${recordId} with Updated Record ID: ${updatedRecordId}`);
+            return recordId === updatedRecordId;
+        });
+    
+        console.log('Record Index:', recordIndex);
+    
+        let updatedAttendance;
+    
+        if (recordIndex !== -1) {
+            updatedAttendance = [
+                ...userAttendance.slice(0, recordIndex),
+                { ...updatedRecord, date: normalizedUpdatedDate },
+                ...userAttendance.slice(recordIndex + 1)
+            ];
+            console.log('Record updated at index:', recordIndex);
+        } else {
+            updatedAttendance = [...userAttendance, { ...updatedRecord, date: normalizedUpdatedDate }];
+            console.log('New record added');
+        }
+    
+        console.log('Updated Attendance Array:', updatedAttendance);
+        setUserAttendance(updatedAttendance);
+    
+        try {
+            const attendanceRef = doc(db, 'attendance', userId);
+            await updateDoc(attendanceRef, { attendance: updatedAttendance });
+            enqueueSnackbar('Attendance record updated successfully', { variant: 'success' });
+        } catch (error) {
+            console.error('Error updating attendance record:', error);
+            enqueueSnackbar('Failed to update attendance record', { variant: 'error' });
+        }
+    
+        setOpenDialog(false);
+    };
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    const handleEditClick = (record) => {
+        setSelectedRecord(record);
+        setOpenDialog(true); // Open the dialog when the edit button is clicked
+    };
+
     return (
         <DefaultLayout>
             <Breadcrumb pageName="Employees Attendance Table" />
@@ -153,7 +242,46 @@ const AttendanceSearchTable = () => {
                                 </div>
                             </div>
                         ) : userAttendance.length > 0 ? (
+
                             <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+                                <table className="w-full table-auto mb-10">
+                                    <thead>
+                                        <tr className="bg-gray-2 text-left dark:bg-meta-4">
+                                            <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white">Date</th>
+                                            <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Status</th>
+                                            <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Resaon</th>
+                                            <th className="min-w-[50px] py-4 px-4 font-medium text-black dark:text-white">Edit</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {userAttendance.length > 0 ? (
+                                            userAttendance.map((detail, index) => (
+                                                <tr key={index}>
+                                                    <td className="border-b border-[#eee] py-5 px-4 pl-9 dark:border-strokedark xl:pl-11">
+                                                        <p className="text-black dark:text-white">{detail.date}</p>
+                                                    </td>
+                                                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                                                        <p className="text-black dark:text-white">{detail.status}</p>
+                                                    </td>
+                                                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                                                        <p className="text-black dark:text-white">{detail.reason || 'No Reason'}</p>
+                                                    </td>
+                                                    <td className="py-4 px-4">
+                                                        <IconButton onClick={() => handleEditClick(detail)}>
+                                                            <MdEdit className='dark:text-white' />
+                                                        </IconButton>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        ) : (
+                                            <tr>
+                                                <td colSpan="2" className="py-5 px-4 text-center text-black dark:text-white">
+                                                    No attendance data available.
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
                                 <div className="max-w-full overflow-x-auto lg:overflow-x-hidden">
                                     <table className="w-full table-auto">
                                         <thead>
@@ -219,6 +347,12 @@ const AttendanceSearchTable = () => {
                     </div>
                 </div>
             </div>
+            <EditAttendanceDialog
+                open={openDialog}
+                onClose={() => setOpenDialog(false)}
+                record={selectedRecord}
+                onUpdate={handleUpdate}
+            />
         </DefaultLayout>
     );
 };
