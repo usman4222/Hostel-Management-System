@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { collection, getDocs, writeBatch, doc, getDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import DefaultLayout from '../../layout/DefaultLayout';
@@ -6,6 +6,7 @@ import Breadcrumb from '../Breadcrumbs/Breadcrumb';
 import { enqueueSnackbar } from 'notistack';
 import { FaUserCircle } from 'react-icons/fa';
 import Spinner from '../Spinner';
+import ReasonDialog from '../ReasonDialog';
 
 const MarkAttendance = () => {
     const [users, setUsers] = useState([]);
@@ -16,6 +17,9 @@ const MarkAttendance = () => {
     const [selectedDate, setSelectedDate] = useState('');
     const [attendanceStatuses, setAttendanceStatuses] = useState({});
     const [isSaveDisabled, setIsSaveDisabled] = useState(true);
+    const [openDialog, setOpenDialog] = useState(false);
+    const [dialogStudentId, setDialogStudentId] = useState(null);
+    const [dialogReason, setDialogReason] = useState('');
     const [isChecked, setIsChecked] = useState(true);
 
     useEffect(() => {
@@ -29,7 +33,7 @@ const MarkAttendance = () => {
     useEffect(() => {
         const defaultStatuses = displayedUsers.reduce((acc, user) => ({
             ...acc,
-            [user.id]: 'Present'
+            [user.id]: { status: 'Present', reason: '' }
         }), {});
         setAttendanceStatuses(defaultStatuses);
     }, [displayedUsers]);
@@ -60,14 +64,28 @@ const MarkAttendance = () => {
     };
 
     const handleStatusChange = (userId, status) => {
-        console.log(`Changing status for user ${userId} to ${status}`);
-        setAttendanceStatuses(prev => ({ ...prev, [userId]: status }));
+        setAttendanceStatuses(prev => ({
+            ...prev,
+            [userId]: {
+                ...prev[userId],
+                status
+            }
+        }));
+        if (status === 'Leave' || status === 'Absent') {
+            setDialogStudentId(userId);
+            setOpenDialog(true);
+        }
     };
 
-
-    // const handleStatusChange = (userId, status) => {
-    //     setAttendanceStatuses(prev => ({ ...prev, [userId]: status }));
-    // };
+    const handleDialogSave = (studentId, reason) => {
+        setAttendanceStatuses(prev => ({
+            ...prev,
+            [studentId]: {
+                ...prev[studentId],
+                reason
+            }
+        }));
+    };
 
     const handleSaveAttendance = async () => {
         if (!selectedDate) {
@@ -77,7 +95,6 @@ const MarkAttendance = () => {
 
         try {
             setLoading(true);
-
             const batch = writeBatch(db);
 
             for (const user of displayedUsers) {
@@ -86,7 +103,8 @@ const MarkAttendance = () => {
                 const newAttendanceRecord = {
                     userId: user.id,
                     date: selectedDate,
-                    status: attendanceStatuses[user.id]
+                    status: attendanceStatuses[user.id].status,
+                    reason: attendanceStatuses[user.id].reason
                 };
 
                 if (docSnap.exists()) {
@@ -114,7 +132,6 @@ const MarkAttendance = () => {
             enqueueSnackbar('Error saving attendance.', { variant: 'error' });
         }
     };
-    
 
     const handlePageChange = (newPage) => {
         if (newPage > 0 && newPage <= Math.ceil(users.length / itemsPerPage)) {
@@ -138,7 +155,7 @@ const MarkAttendance = () => {
                                         type="date"
                                         onChange={handleDateChange}
                                         value={selectedDate}
-                                        className="w-full bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white md:w-50 "
+                                        className="w-full bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white md:w-50"
                                     />
                                 </div>
                             </div>
@@ -165,89 +182,62 @@ const MarkAttendance = () => {
                                             <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white">Name</th>
                                             <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white">Father Name</th>
                                             <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Class</th>
-                                            <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Attendance</th>
+                                            <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Status</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {displayedUsers.map((user) => (
-                                            <tr key={user.id} className="border-b border-stroke text-black dark:border-strokedark dark:text-white">
-                                                <td className="py-4 px-4">
-                                                    <div className="flex items-center gap-2.5">
-                                                        <div className="relative h-10 w-10 overflow-hidden rounded-full">
-                                                            {user.profileImage ? (
-                                                                <img
-                                                                    src={user.profileImage}
-                                                                    alt="User Profile"
-                                                                    className="h-full w-full object-cover"
-                                                                />
-                                                            ) : (
-                                                                <FaUserCircle className="h-full w-full text-gray-300" />
-                                                            )}
+                                        {displayedUsers.map((user) => {
+                                            const userStatus = attendanceStatuses[user.id] || { status: 'Present', reason: '' };
+                                            return (
+                                                <tr key={user.id} className="border-b border-stroke text-black dark:border-strokedark dark:text-white">
+                                                    <td className="py-4 px-4">
+                                                        <div className="flex items-center gap-2.5">
+                                                            <div className="relative h-10 w-10 overflow-hidden rounded-full">
+                                                                {user.profileImage ? (
+                                                                    <img className="h-full w-full object-cover" src={user.profileImage} alt="User Profile" />
+                                                                ) : (
+                                                                    <FaUserCircle className="h-full w-full text-gray-400" />
+                                                                )}
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </td>
-                                                <td className="py-4 px-4">{user.regNo}</td>
-                                                <td className="py-4 px-4">{user.name}</td>
-                                                <td className="py-4 px-4">{user.fName}</td>
-                                                <td className="py-4 px-4">{user.studyProgress}</td>
-                                                <td className="py-4 px-4">
-                                                    <div className="flex gap-6">
-                                                        <label>
-                                                            <div className='flex justify-center items-center'>
-                                                                <input
-                                                                    type="radio"
-                                                                    name={`status-${user.id}`}
-                                                                    value="Present"
-                                                                    checked={attendanceStatuses[user.id] === 'Present'}
-                                                                    onChange={() => handleStatusChange(user.id, 'Present')}
-                                                                    className={`box mr-2 flex-row h-5 w-5 items-center justify-center rounded-full border border-primary ${isChecked && '!border-4'
-                                                                        }`}
-                                                                />
-                                                                Present
-                                                            </div>
-                                                        </label>
-                                                        <label>
-                                                            <div className='flex justify-center items-center'>
-                                                                <input
-                                                                    type="radio"
-                                                                    name={`status-${user.id}`}
-                                                                    value="Absent"
-                                                                    checked={attendanceStatuses[user.id] === 'Absent'}
-                                                                    onChange={() => handleStatusChange(user.id, 'Absent')}
-                                                                    className={`box mr-2 flex-row h-5 w-5 items-center justify-center rounded-full border border-primary ${isChecked && '!border-4'
-                                                                        }`}
-                                                                />
-                                                                Absent
-                                                            </div>
-                                                        </label>
-                                                        <label>
-                                                            <div className='flex justify-center items-center'>
-                                                                <input
-                                                                    type="radio"
-                                                                    name={`status-${user.id}`}
-                                                                    value="Leave"
-                                                                    checked={attendanceStatuses[user.id] === 'Leave'}
-                                                                    onChange={() => handleStatusChange(user.id, 'Leave')}
-                                                                    className={`box mr-2 flex-row h-5 w-5 items-center justify-center rounded-full border border-primary ${isChecked && '!border-4'
-                                                                        }`}
-                                                                />
-                                                                Leave
-                                                            </div>
-                                                        </label>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ))}
+                                                    </td>
+                                                    <td className="py-4 px-4">{user.regNo}</td>
+                                                    <td className="py-4 px-4">{user.name}</td>
+                                                    <td className="py-4 px-4">{user.fName}</td>
+                                                    <td className="py-4 px-4">{user.studentClass}</td>
+                                                    <td className="py-4 px-4">
+                                                        <div className="flex items-center space-x-4">
+                                                            {['Present', 'Absent', 'Leave'].map((status) => (
+                                                                <label key={status} className="inline-flex items-center">
+                                                                    <input
+                                                                        type="radio"
+                                                                        className={`box mr-2 flex-row h-5 w-5 items-center justify-center rounded-full border border-primary ${isChecked && '!border-4'
+                                                                            }`}
+                                                                        name={`attendance-${user.id}`}
+                                                                        value={status}
+                                                                        checked={userStatus.status === status}
+                                                                        onChange={() => handleStatusChange(user.id, status)}
+                                                                    />
+                                                                    <span className="ml-2">{status}</span>
+                                                                </label>
+                                                            ))}
+                                                        </div>
+                                                        {userStatus.reason && (
+                                                            <div className="text-xs text-gray-500 mt-5">Reason:{userStatus.reason} </div>
+                                                        )}
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
                                     </tbody>
                                 </table>
-                                <div className='flex justify-center items-center py-5'>
+                                <div className='flex justify-center pt-10'>
                                     <button
                                         onClick={handleSaveAttendance}
                                         disabled={isSaveDisabled}
-                                        className={`py-2 px-4 rounded mt-4 text-white ${isSaveDisabled ? 'bg-blue-700 opacity-50 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-700'
-                                            }`}
+                                        className="px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white rounded"
                                     >
-                                        {loading ? <Spinner /> : 'Save Attendance'}
+                                        Save Attendance
                                     </button>
                                 </div>
                                 <div className="flex justify-between items-center my-6">
@@ -274,9 +264,17 @@ const MarkAttendance = () => {
                     </div>
                 </div>
             </div>
+
+
+            <ReasonDialog
+                open={openDialog}
+                onClose={() => setOpenDialog(false)}
+                onSave={handleDialogSave}
+                studentId={dialogStudentId}
+                initialReason={dialogReason}
+            />
         </DefaultLayout>
     );
 };
-
 
 export default MarkAttendance;

@@ -100,6 +100,7 @@ const CurrentMonthAttendanceList = () => {
                                     <tr className="bg-gray-2 text-left dark:bg-meta-4">
                                         <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white">Date</th>
                                         <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Status</th>
+                                        <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">Resaon</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -111,6 +112,9 @@ const CurrentMonthAttendanceList = () => {
                                                 </td>
                                                 <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                                     <p className="text-black dark:text-white">{detail.status}</p>
+                                                </td>
+                                                <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                                                    <p className="text-black dark:text-white">{detail.reason || 'No Reason'}</p>
                                                 </td>
                                             </tr>
                                         ))
