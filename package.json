@@ -16,6 +16,7 @@
     "@mui/material": "^5.16.7",
     "@reduxjs/toolkit": "^2.2.3",
     "@types/firebase": "^3.2.1",
+    "apexcharts": "^3.52.0",
     "axios": "^1.6.8",
     "dotenv-webpack": "^8.1.0",
     "firebase": "^10.12.3",
