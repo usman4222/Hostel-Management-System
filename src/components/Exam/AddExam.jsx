@@ -15,6 +15,9 @@ const AddExam = () => {
     const [selectedSubject, setSelectedSubject] = useState('');
     const [examTerm, setExamTerm] = useState('');
     const [totalMarks, setTotalMarks] = useState('');
+    const [className, setClassName] = useState('');
+    const [subjectName, setSubjectName] = useState('');
+    const [studentName, setStudentName] = useState('');
     const [obtainedMarks, setObtainedMarks] = useState('');
     const [students, setStudents] = useState([]);
     const [classes, setClasses] = useState([]);
@@ -34,7 +37,6 @@ const AddExam = () => {
                     console.log("No students found for this class.");
                 } else {
                     const studentsList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    console.log("Students fetched:", studentsList);
                     setStudents(studentsList);
                 }
             } catch (error) {
@@ -68,17 +70,68 @@ const AddExam = () => {
         fetchSubjects();
     }, [selectedClass]);
 
+    useEffect(() => {
+        const fetchClasses = async () => {
+            const classesCollection = collection(db, 'classes');
+            const classesSnapshot = await getDocs(classesCollection);
+            const classesList = classesSnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+            setClasses(classesList);
+            console.log('Fetched classes:', classesList);
+        };
+        fetchClasses();
+    }, []);
+
+
     const handleClassChange = (e) => {
-        setSelectedClass(e.target.value);
+        const selectedClassId = e.target.value;
+        setSelectedClass(selectedClassId);
+
+        // Find the selected class object
+        const selectedClassObj = classes.find(cls => cls.id === selectedClassId);
+
+        // Check if the selected class object is found and set the class name
+        if (selectedClassObj) {
+            setClassName(selectedClassObj.className); // Use the actual property name
+            console.log('Selected Class Name:', selectedClassObj.className); // For debugging
+        } else {
+            setClassName(''); // Reset if not found
+            console.error('Class name not found for selected class ID:', selectedClassId); // For debugging
+        }
     };
+
+
+    useEffect(() => {
+        console.log('Current State:', {
+            className,
+            totalMarks,
+            classId: selectedClass,
+            studentId: selectedStudent,
+            obtainedMarks,
+            studentName,
+            examTerm,
+            subject: selectedSubject,
+        });
+    }, [className, totalMarks, selectedClass, selectedStudent, obtainedMarks, studentName, examTerm, selectedSubject]);
+
+
 
     const handleStudentChange = (e) => {
-        setSelectedStudent(e.target.value);
+        const selectedStudentId = e.target.value;
+        const selectedStudentObj = students.find(student => student.id === selectedStudentId);
+        setSelectedStudent(selectedStudentId);
+        setStudentName(selectedStudentObj ? selectedStudentObj.name : '');
     };
 
+
     const handleSubjectChange = (e) => {
-        setSelectedSubject(e.target.value);
+        const selectedSubjectValue = e.target.value;
+        setSelectedSubject(selectedSubjectValue);
+        setSubjectName(selectedSubjectValue); 
     };
+
 
     const handleExamTermChange = (e) => {
         setExamTerm(e.target.value);
@@ -95,26 +148,39 @@ const AddExam = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!selectedClass || !selectedStudent || !selectedSubject || !examTerm || !totalMarks || !obtainedMarks) {
+        if (!selectedClass || !selectedStudent || !studentName || !selectedSubject || !examTerm || !totalMarks || !obtainedMarks) {
             console.error("All fields are required");
             return;
         }
-
+        console.log({
+            className,
+            totalMarks,
+            classId: selectedClass,
+            studentId: selectedStudent,
+            obtainedMarks,
+            studentName,
+            examTerm,
+            subject: selectedSubject,
+        });
+    
         setLoading(true);
 
         try {
             await addDoc(collection(db, 'exams'), {
+                className,
+                totalMarks,
                 classId: selectedClass,
                 studentId: selectedStudent,
+                obtainedMarks,
+                studentName,
+                examTerm,
                 subject: selectedSubject,
-                examTerm: examTerm,
-                totalMarks: parseFloat(totalMarks),
-                obtainedMarks: parseFloat(obtainedMarks),
             });
             enqueueSnackbar("Exam added successfully!", { variant: 'success' });
             setSelectedClass("")
             setSelectedStudent("")
             setSelectedSubject("")
+            setStudentName("")
             setExamTerm("")
             setTotalMarks("")
             setObtainedMarks("")
@@ -179,7 +245,6 @@ const AddExam = () => {
                                         </span>
                                     </div>
                                 </div>
-
                                 <div className="mb-4.5">
                                     <label className="mb-2.5 block text-black dark:text-white">
                                         Select Class
@@ -227,7 +292,6 @@ const AddExam = () => {
                                         </span>
                                     </div>
                                 </div>
-
                                 <div className="mb-4.5 ">
                                     <label className="mb-2.5 block text-black dark:text-white">
                                         Select Student
@@ -275,7 +339,6 @@ const AddExam = () => {
                                         </span>
                                     </div>
                                 </div>
-
                                 <div className="mb-4.5 ">
                                     <label className="mb-2.5 block text-black dark:text-white">
                                         Select Subject
@@ -323,7 +386,6 @@ const AddExam = () => {
                                         </span>
                                     </div>
                                 </div>
-
                                 <div className="w-full mb-4.5">
                                     <label className="mb-2.5 block text-black dark:text-white">
                                         Total Marks
