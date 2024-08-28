@@ -45,7 +45,7 @@ function App() {
           <Route path='/update-class/:id' element={<UpdateClass />} />
           <Route path='/add-exam' element={<AddExam />} />
           <Route path='/all-exams' element={<AllExams />} />
-          <Route path='/update-exam/:id' element={<UpdateExam />} />
+          <Route path='/edit-exam/:id' element={<UpdateExam />} />
           <Route path='*' element={<NotFound />} />
         </Route>
         <Route element={<GuestRoute />}>
