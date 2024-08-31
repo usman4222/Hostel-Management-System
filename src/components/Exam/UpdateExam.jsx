@@ -32,7 +32,7 @@ const UpdateExam = () => {
     useEffect(() => {
         const fetchExam = async () => {
             try {
-                const docRef = doc(db, 'exams', id); // Correctly using the `id` from useParams
+                const docRef = doc(db, 'exams', id); 
                 const docSnap = await getDoc(docRef);
 
                 if (docSnap.exists()) {
@@ -43,9 +43,8 @@ const UpdateExam = () => {
                     setExamTerm(examData.examTerm || '');
                     setTotalMarks(examData.totalMarks || '');
                     setObtainedMarks(examData.obtainedMarks || '');
-                    setSubjectName(examData.subjectName || ''); // Directly set subjectName from exam data
+                    setSubjectName(examData.subjectName || '');
 
-                    // Fetch class name
                     const classDoc = await getDoc(doc(db, 'classes', examData.classId));
                     if (classDoc.exists()) {
                         setClassName(classDoc.data().className);
@@ -53,7 +52,6 @@ const UpdateExam = () => {
                         console.error("Class document not found");
                     }
 
-                    // Fetch student name
                     const studentDoc = await getDoc(doc(db, 'students', examData.studentId));
                     if (studentDoc.exists()) {
                         setStudentName(studentDoc.data().name);
@@ -71,7 +69,7 @@ const UpdateExam = () => {
         };
 
         fetchExam();
-    }, [id]); // Ensuring this runs whenever `id` changes
+    }, [id]); 
 
     useEffect(() => {
         const fetchStudents = async () => {
@@ -155,12 +153,11 @@ const UpdateExam = () => {
         const classId = e.target.value;
         setSelectedClass(classId);
 
-        // Find the selected class details
         const selectedClassData = classes.find(cls => cls.id === classId);
         if (selectedClassData) {
-            setClassName(selectedClassData.className); // Update className with selected class name
+            setClassName(selectedClassData.className); 
         } else {
-            setClassName(''); // Clear class name if no class is selected
+            setClassName(''); 
         }
     };
 
@@ -184,7 +181,7 @@ const UpdateExam = () => {
         // Find the selected subject details
         const selectedSubjectData = subjects.find(sub => sub.id === subjectId);
         if (selectedSubjectData) {
-            setSubjectName(selectedSubjectData.subjectName); // Adjust this based on your data structure
+            setSubjectName(selectedSubjectData.subjectName); 
         }
     };
 
@@ -221,8 +218,8 @@ const UpdateExam = () => {
                 examTerm: examTerm,
                 totalMarks: parseFloat(totalMarks),
                 obtainedMarks: parseFloat(obtainedMarks),
-                className: className, // Update class name
-                subjectName: subjectName, // Update subject name
+                className: className, 
+                subjectName: subjectName, 
             });
             enqueueSnackbar("Exam updated successfully!", { variant: 'success' });
             navigate('/all-exams');

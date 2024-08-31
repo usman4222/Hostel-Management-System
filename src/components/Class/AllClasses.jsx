@@ -8,6 +8,7 @@ import { db } from '../../firebase';
 import DefaultLayout from '../../layout/DefaultLayout';
 import Breadcrumb from '../Breadcrumbs/Breadcrumb';
 import { useSnackbar } from 'notistack';
+import DelDialogue from '../DelDialogue';
 
 const AllClasses = () => {
     const [classes, setClasses] = useState([]);
@@ -15,7 +16,9 @@ const AllClasses = () => {
     const [loading, setLoading] = useState(true);
     const [selectedClass, setSelectedClass] = useState("");
     const { enqueueSnackbar } = useSnackbar();
-
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false); 
+    const [classToDelete, setClassToDelete] = useState(null);
+    const [delLoading, setDelLoading] = useState(false)
 
     const fetchClasses = async () => {
         try {
@@ -35,7 +38,7 @@ const AllClasses = () => {
             const filtered = classes.filter(cls => cls.className === selectedClass.trim());
             setFilteredClasses(filtered);
         } else {
-            setFilteredClasses(classes); 
+            setFilteredClasses(classes);
         }
     };
 
@@ -51,13 +54,24 @@ const AllClasses = () => {
         setSelectedClass(e.target.value);
     };
 
-    const deleteUserHandler = async (classId) => {
+    const confirmDeleteUser = (classId) => {
+        setClassToDelete(classId);
+        setDelLoading(false);
+        setShowDeleteDialog(true);
+    };
+
+    const deleteClassHandler = async () => {
         try {
-            await deleteDoc(doc(db, 'classes', classId));
+            setDelLoading(true);
+            await deleteDoc(doc(db, 'classes', classToDelete));
             enqueueSnackbar('Class deleted successfully', { variant: 'success' });
-            fetchClasses(); 
+            fetchClasses();
+            setShowDeleteDialog(false);
         } catch (error) {
             console.error('Error deleting class: ', error);
+        }
+        finally{
+            setDelLoading(false);
         }
     };
 
@@ -127,8 +141,8 @@ const AllClasses = () => {
                                             </td>
                                             <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                                 <div className="flex items-center space-x-3.5">
-                                                    <button className="hover:text-primary" onClick={() => deleteUserHandler(classItem.id)}>
-                                                        <MdDeleteForever />
+                                                    <button className="hover:text-primary">
+                                                        <MdDeleteForever onClick={() => confirmDeleteUser(classItem.id)} />
                                                     </button>
                                                     <Link to={`/update-class/${classItem.id}`}>
                                                         <button className="hover:text-primary">
@@ -144,6 +158,13 @@ const AllClasses = () => {
                         )}
                     </div>
                 </div>
+                {showDeleteDialog && (
+                    <DelDialogue
+                        onClose={() => setShowDeleteDialog(false)}
+                        onConfirm={deleteClassHandler}
+                        loading={delLoading}
+                    />
+                )}
             </div>
         </DefaultLayout>
     );

@@ -7,11 +7,13 @@ import { db } from '../firebase';
 import { useSnackbar } from 'notistack';
 import { CSVLink } from 'react-csv';
 import { ImEye } from 'react-icons/im';
+import DelDialogue from '../components/DelDialogue';
 
 const TableOne = () => {
     const [users, setUsers] = useState([]);
     const [displayedUsers, setDisplayedUsers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [delLoading, setDelLoading] = useState(false)
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(50);
     const [selectedClass, setSelectedClass] = useState("");
@@ -20,6 +22,10 @@ const TableOne = () => {
     const [classInput, setClassInput] = useState("");
     const { enqueueSnackbar } = useSnackbar();
     const [searchQuery, setSearchQuery] = useState("");
+
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+    const [userToDelete, setUserToDelete] = useState(null);
+
 
     const fetchClasses = async () => {
         try {
@@ -123,16 +129,29 @@ const TableOne = () => {
             setCurrentPage(newPage);
         }
     };
-    const deleteUserHandler = async (userId) => {
+
+    const confirmDeleteUser = (userId) => {
+        setUserToDelete(userId);
+        setDelLoading(false);
+        setShowDeleteDialog(true);
+    };
+
+    const deleteUserHandler = async () => {
         try {
-            await deleteDoc(doc(db, 'students', userId));
+            setDelLoading(true);
+            await deleteDoc(doc(db, 'students', userToDelete));
             enqueueSnackbar("Student deleted successfully", { variant: "success" });
-            setUsers(users.filter(user => user.id !== userId));
+            setUsers(users.filter(user => user.id !== userToDelete));
+            setShowDeleteDialog(false);
         } catch (error) {
             console.error("Error deleting user: ", error);
             enqueueSnackbar("Failed to delete student", { variant: "error" });
+        } finally {
+            setDelLoading(false); 
         }
     };
+    
+    
 
 
     return (
@@ -221,8 +240,8 @@ const TableOne = () => {
                                                         <ImEye />
                                                     </Link>
                                                 </button>
-                                                <button className="hover:text-primary" onClick={() => deleteUserHandler(user.id)}>
-                                                    <MdDeleteForever />
+                                                <button className="hover:text-primary">
+                                                    <MdDeleteForever onClick={() => confirmDeleteUser(user.id)} />
                                                 </button>
                                                 <Link to={`/update-user/${user.id}`}>
                                                     <button className="hover:text-primary">
@@ -258,6 +277,13 @@ const TableOne = () => {
                     </>
                 )}
             </div>
+            {showDeleteDialog && (
+                <DelDialogue
+                    onClose={() => setShowDeleteDialog(false)}
+                    onConfirm={deleteUserHandler}
+                    loading={delLoading}
+                />
+            )}
         </div>
     );
 };

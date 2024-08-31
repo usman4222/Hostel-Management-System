@@ -16,7 +16,7 @@ function Dash() {
 
     const fetchUsers = async () => {
         try {
-            const querySnapshot = await getDocs(collection(db, 'profiles'));
+            const querySnapshot = await getDocs(collection(db, 'students'));
             const usersList = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
             setUsers(usersList);
             setLoading(false);
@@ -49,12 +49,12 @@ function Dash() {
     return (
         <DefaultLayout>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
-                <CardDataStats title="Total Users" total={<CountUp end={usersCount} duration={2} />}>
+                <CardDataStats title="Total Students" total={<CountUp end={usersCount} duration={2} />}>
                     <RiMoneyPoundCircleLine className=" dark:fill-white text-xl" />
                 </CardDataStats>
-                <CardDataStats title="Total Blogs" total={<CountUp end={blogsCount} duration={2} />}>
+                {/* <CardDataStats title="Total Blogs" total={<CountUp end={blogsCount} duration={2} />}>
                     <GrArticle className="fill-primary dark:fill-white text-xl" />
-                </CardDataStats>
+                </CardDataStats> */}
             </div>
         </DefaultLayout>
     );

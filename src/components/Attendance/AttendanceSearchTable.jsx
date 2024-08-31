@@ -19,7 +19,7 @@ const AttendanceSearchTable = () => {
     const [endDate, setEndDate] = useState('');
     const [loading, setLoading] = useState(false);
     const [userAttendance, setUserAttendance] = useState([]);
-    const [selectedRecord, setSelectedRecord] = useState(null); // State for the selected record
+    const [selectedRecord, setSelectedRecord] = useState(null); 
     const [openDialog, setOpenDialog] = useState(false); 
 
     const fetchUserData = async (userId) => {
@@ -178,7 +178,7 @@ const AttendanceSearchTable = () => {
     
     const handleEditClick = (record) => {
         setSelectedRecord(record);
-        setOpenDialog(true); // Open the dialog when the edit button is clicked
+        setOpenDialog(true); 
     };
 
     return (

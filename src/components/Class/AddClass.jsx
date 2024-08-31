@@ -28,6 +28,11 @@ const AddClass = () => {
         setSubjects([...subjects, '']);
     };
 
+    const removeSubjectField = (index) => {
+        const newSubjects = subjects.filter((_, i) => i !== index);
+        setSubjects(newSubjects);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!selectedClass || subjects.some(subject => !subject)) {
@@ -122,6 +127,26 @@ const AddClass = () => {
                                                 onChange={(e) => handleSubjectChange(index, e.target.value)}
                                                 className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                             />
+                                            <button
+                                                type="button"
+                                                onClick={() => removeSubjectField(index)}
+                                                className="ml-2 text-red-500"
+                                            >
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                    stroke="currentColor"
+                                                    className="w-6 h-6"
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth="2"
+                                                        d="M6 18L18 6M6 6l12 12"
+                                                    />
+                                                </svg>
+                                            </button>
                                             {index === subjects.length - 1 && (
                                                 <button
                                                     type="button"
@@ -135,7 +160,12 @@ const AddClass = () => {
                                                         stroke="currentColor"
                                                         className="w-6 h-6"
                                                     >
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            strokeWidth="2"
+                                                            d="M12 4v16m8-8H4"
+                                                        />
                                                     </svg>
                                                 </button>
                                             )}
@@ -147,7 +177,7 @@ const AddClass = () => {
                                     className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90"
                                     disabled={loading}
                                 >
-                                    {loading ? <Spinner /> : '  Add Class'}
+                                    {loading ? <Spinner /> : 'Add Class'}
                                 </button>
                             </div>
                         </form>

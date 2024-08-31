@@ -1,12 +1,21 @@
 import React, { useState } from 'react';
 import { Dialog, DialogActions, DialogContent, DialogTitle, Button, TextField } from '@mui/material';
+import { useSnackbar } from 'notistack';
 
 const ReasonDialog = ({ open, onClose, onSave, studentId, initialReason }) => {
     const [reason, setReason] = useState(initialReason || '');
+    const { enqueueSnackbar } = useSnackbar();
+    const [error, setError] = useState("")
 
     const handleSave = () => {
+        if (reason.trim() === '') {
+            setError('Reason cannot be empty');
+            enqueueSnackbar("Please enter a reason before saving.", { variant: "warning" });
+            return;
+        }
         onSave(studentId, reason);
         setReason('');
+        setError('');
         onClose();
     };
 

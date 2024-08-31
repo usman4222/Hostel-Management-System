@@ -6,6 +6,7 @@ import { db } from '../../firebase';
 import DefaultLayout from '../../layout/DefaultLayout';
 import Breadcrumb from '../Breadcrumbs/Breadcrumb';
 import { useSnackbar } from 'notistack';
+import DelDialogue from '../DelDialogue';
 
 const AllExams = () => {
     const [exams, setExams] = useState([]);
@@ -16,8 +17,11 @@ const AllExams = () => {
     const [subjectKeyword, setSubjectKeyword] = useState("");
     const [classes, setClasses] = useState([]);
     const [selectedClass, setSelectedClass] = useState("");
-    const [selectedTerm, setSelectedTerm] = useState(""); 
+    const [selectedTerm, setSelectedTerm] = useState("");
     const [filteredExams, setFilteredExams] = useState([]);
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false); 
+    const [examToDelete, setExamToDelete] = useState(null);
+    const [delLoading, setDelLoading] = useState(false)
 
     const fetchExams = async () => {
         try {
@@ -41,7 +45,7 @@ const AllExams = () => {
             const matchesClass = selectedClass ? exam.className.toLowerCase().includes(selectedClass.toLowerCase()) : true;
             const matchesName = nameKeyword ? exam.studentName.toLowerCase().includes(nameKeyword.toLowerCase()) : true;
             const matchesSubject = subjectKeyword ? exam.subject.toLowerCase().includes(subjectKeyword.toLowerCase()) : true;
-            const matchesTerm = selectedTerm ? exam.examTerm.toLowerCase() === selectedTerm.toLowerCase() : true; 
+            const matchesTerm = selectedTerm ? exam.examTerm.toLowerCase() === selectedTerm.toLowerCase() : true;
 
             return matchesClass && matchesName && matchesSubject && matchesTerm;
         });
@@ -56,7 +60,7 @@ const AllExams = () => {
 
     useEffect(() => {
         filterExams();
-    }, [exams, selectedClass, nameKeyword, subjectKeyword, selectedTerm]); 
+    }, [exams, selectedClass, nameKeyword, subjectKeyword, selectedTerm]);
 
     const fetchClasses = async () => {
         try {
@@ -84,13 +88,24 @@ const AllExams = () => {
         setSelectedTerm(e.target.value);
     };
 
-    const deleteExamHandler = async (examId) => {
+    const confirmDeleteUser = (examId) => {
+        setExamToDelete(examId); 
+        setShowDeleteDialog(true);
+        setDelLoading(false);
+    };
+
+    const deleteExamHandler = async () => {
         try {
-            await deleteDoc(doc(db, 'exams', examId));
+            setDelLoading(true);
+            await deleteDoc(doc(db, 'exams', examToDelete));
             enqueueSnackbar('Exam deleted successfully', { variant: 'success' });
             fetchExams();
+            setShowDeleteDialog(false); 
         } catch (error) {
             console.error('Error deleting exam: ', error);
+        }
+        finally{
+            setDelLoading(false);
         }
     };
 
@@ -227,11 +242,9 @@ const AllExams = () => {
                                                     <Link to={`/edit-exam/${exam.id}`}>
                                                         <MdEdit className="text-primary hover:text-black" size={22} />
                                                     </Link>
-                                                    <MdDeleteForever
-                                                        className="text-danger hover:text-black cursor-pointer"
-                                                        size={22}
-                                                        onClick={() => deleteExamHandler(exam.id)}
-                                                    />
+                                                    <button className="hover:text-primary">
+                                                        <MdDeleteForever onClick={() => confirmDeleteUser(exam.id)} />
+                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -241,6 +254,13 @@ const AllExams = () => {
                         )}
                     </div>
                 </div>
+                {showDeleteDialog && (
+                    <DelDialogue
+                        onClose={() => setShowDeleteDialog(false)}
+                        onConfirm={deleteExamHandler}
+                        loading={delLoading}
+                    />
+                )}
             </div>
         </DefaultLayout>
     );

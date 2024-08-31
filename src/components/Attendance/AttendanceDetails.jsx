@@ -252,7 +252,7 @@ const AttendanceDetails = () => {
                                             <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                                 <Link
                                                     to={`/attendance/view/${user.id}`}
-                                                    className="inline-flex items-center justify-center bg-black py-4 px-10 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
+                                                    className="inline-flex items-center justify-center bg-black  py-4 px-10 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
                                                 >
                                                     Attendance Details
                                                 </Link>
