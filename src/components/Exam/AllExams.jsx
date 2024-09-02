@@ -240,7 +240,7 @@ const AllExams = () => {
                                             <td className="border-b border-[#eee] py-5 px-4 pl-9 dark:border-strokedark">
                                                 <div className="flex items-center space-x-3.5">
                                                     <Link to={`/edit-exam/${exam.id}`}>
-                                                        <MdEdit className="text-primary hover:text-black" size={22} />
+                                                        <MdEdit className="hover:text-primary" />
                                                     </Link>
                                                     <button className="hover:text-primary">
                                                         <MdDeleteForever onClick={() => confirmDeleteUser(exam.id)} />
