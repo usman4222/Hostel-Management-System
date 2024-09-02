@@ -2,10 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MdDeleteForever, MdEdit } from "react-icons/md";
 import { FaUserCircle } from 'react-icons/fa';
-import { collection, getDocs, query, where, writeBatch, getDoc, doc, updateDoc, increment, deleteDoc } from 'firebase/firestore';
+import { collection, getDocs, query, where, doc, deleteDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useSnackbar } from 'notistack';
-import { CSVLink } from 'react-csv';
 import { ImEye } from 'react-icons/im';
 import DelDialogue from '../components/DelDialogue';
 

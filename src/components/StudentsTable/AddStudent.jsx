@@ -8,7 +8,6 @@ import Breadcrumb from "../Breadcrumbs/Breadcrumb";
 import { FaImage } from "react-icons/fa";
 import Spinner from "../Spinner";
 import { useSnackbar } from "notistack";
-import FetchedClasses from "../FetchedClassess";
 
 const AddEmployee = () => {
   const navigate = useNavigate();
