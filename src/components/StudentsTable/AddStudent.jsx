@@ -81,6 +81,30 @@ const AddEmployee = () => {
       );
       const querySnapshot = await getDocs(q);
 
+      if (name.length < 3) {
+        enqueueSnackbar("Name should be more than 3 characters.", {
+          variant: "error",
+        });
+        setLoading(false);
+        return;
+      }
+
+      if (gurdianPhone.length < 11) {
+        enqueueSnackbar("Phone number should be 11 digits", {
+          variant: "error",
+        });
+        setLoading(false);
+        return;
+      }
+
+      if (bFormNo.length !== 13) {
+        enqueueSnackbar("B Form number should be 13 digits", {
+          variant: "error",
+        });
+        setLoading(false);
+        return;
+      }
+
       if (!querySnapshot.empty) {
         enqueueSnackbar(
           "B-Form No. already exists. Please enter a unique B-Form No.",
@@ -158,6 +182,40 @@ const AddEmployee = () => {
     return getDownloadURL(storageRef);
   };
 
+  const formatBFormNo = (value) => {
+    // Remove non-digit characters
+    value = value.replace(/\D/g, "");
+
+    // Limit length to 13 characters
+    if (value.length > 13) {
+      value = value.slice(0, 13);
+    }
+
+    // Apply the format: 00000-0000000-0
+    if (value.length <= 5) {
+      return value;
+    } else if (value.length <= 12) {
+      return value.slice(0, 5) + "-" + value.slice(5);
+    } else {
+      return (
+        value.slice(0, 5) + "-" + value.slice(5, 12) + "-" + value.slice(12, 13)
+      );
+    }
+  };
+  const handleBFormNoChange = (e) => {
+    const formattedValue = formatBFormNo(e.target.value);
+    setBFormNo(formattedValue);
+  };
+
+  useEffect(() => {
+    const today = new Date().toISOString().split("T")[0];
+    setAdmissionDate(today);
+  }, []);
+
+  const handleDateChange = (e) => {
+    setAdmissionDate(e.target.value);
+  };
+
   const handleFileChange = (setter, setterChosen) => (e) => {
     const file = e.target.files[0];
     setter(file);
@@ -178,14 +236,20 @@ const AddEmployee = () => {
             <div className="mb-2.5 flex flex-col gap-6 xl:flex-row">
               <div className="w-full xl:w-1/4">
                 <label className="mb-2.5 block text-black dark:text-white">
-                  Name
+                  Full Name
                 </label>
                 <input
                   type="text"
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e) => {
+                    const enteredValue = e.target.value.replace(
+                      /[^a-zA-Z ]/g,
+                      ""
+                    );
+                    setName(enteredValue);
+                  }}
                   value={name}
                   required
-                  placeholder="Enter your first name"
+                  placeholder="e.g: John"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
@@ -196,10 +260,16 @@ const AddEmployee = () => {
                 </label>
                 <input
                   type="text"
-                  onChange={(e) => setFName(e.target.value)}
+                  onChange={(e) => {
+                    const enteredValue = e.target.value.replace(
+                      /[^a-zA-Z ]/g,
+                      ""
+                    );
+                    setFName(enteredValue);
+                  }}
                   value={fName}
                   required
-                  placeholder="Enter your last name"
+                  placeholder="e.g: Hipon"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
@@ -212,7 +282,7 @@ const AddEmployee = () => {
                   onChange={(e) => setRegNo(e.target.value)}
                   value={regNo}
                   required
-                  placeholder="Enter Registration No."
+                  placeholder="e.g: 0000"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
@@ -222,10 +292,10 @@ const AddEmployee = () => {
                 </label>
                 <input
                   type="text"
-                  onChange={(e) => setBFormNo(e.target.value)}
+                  onChange={handleBFormNoChange}
                   value={bFormNo}
                   required
-                  placeholder="Enter B-Form No."
+                  placeholder="e.g: 00000-0000000-0"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
@@ -301,32 +371,25 @@ const AddEmployee = () => {
               </div>
             </div>
             <div className="mb-2.5 flex flex-col gap-6 xl:flex-row">
-              <div className="mb-2.5 xl:w-1/2">
+              {/* <div className="mb-2.5 xl:w-1/2">
                 <label className="mb-2.5 block text-black dark:text-white">
                   Study Progress
                 </label>
                 <input
                   type="text"
-                  onChange={(e) => setStudyProgress(e.target.value)}
+                  onChange={(e) => {
+                    const enteredValue = e.target.value.replace(
+                      /[^a-zA-Z]/g,
+                      ""
+                    );
+                    setStudyProgress(enteredValue);
+                  }}
                   value={studyProgress}
                   required
                   placeholder="Enter Study Progress"
                   className="w-full mb-4.5 rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
-              </div>
-              <div className="mb-4.5 xl:w-1/2">
-                <label className="mb-2.5 block text-black dark:text-white">
-                  Student Age
-                </label>
-                <input
-                  type="text"
-                  onChange={(e) => setAge(e.target.value)}
-                  value={age}
-                  required
-                  placeholder="Enter Student Age"
-                  className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                />
-              </div>
+              </div> */}
             </div>
             <div className="mb-2.5 flex flex-col gap-6 xl:flex-row">
               {/* <div className="mb-4.5 xl:w-1/4">
@@ -348,13 +411,13 @@ const AddEmployee = () => {
                 </label>
                 <input
                   type="date"
-                  onChange={(e) => setAdmissionDate(e.target.value)}
+                  onChange={handleDateChange}
                   value={admissionDate}
                   required
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
-              <div className="mb-4.5 xl:w-1/4">
+              {/* <div className="mb-4.5 xl:w-1/4">
                 <label className="mb-2.5 block text-black dark:text-white">
                   Duration of Residence
                 </label>
@@ -366,15 +429,21 @@ const AddEmployee = () => {
                   placeholder="Enter Duration of Residence"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
-              </div>
+              </div> */}
               <div className="mb-4.5 xl:w-1/4">
                 <label className="mb-2.5 block text-black dark:text-white">
                   Gurdian Relation
                 </label>
                 <input
                   type="text"
-                  onChange={(e) => setRelation(e.target.value)}
                   value={relation}
+                  onChange={(e) => {
+                    const enteredValue = e.target.value.replace(
+                      /[^a-zA-Z]/g,
+                      ""
+                    );
+                    setRelation(enteredValue);
+                  }}
                   required
                   placeholder="Enter gurdian relation"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -386,10 +455,31 @@ const AddEmployee = () => {
                 </label>
                 <input
                   type="text"
-                  onChange={(e) => setGurdianPhone(e.target.value)}
+                  onChange={(e) => {
+                    const enteredValue = e.target.value.replace(/\D/g, "");
+                    setGurdianPhone(enteredValue);
+                  }}
                   value={gurdianPhone}
                   required
                   placeholder="Enter Phone No."
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                />
+              </div>
+              <div className="mb-4.5 xl:w-1/4">
+                <label className="mb-2.5 block text-black dark:text-white">
+                  Student Age
+                </label>
+                <input
+                  type="text"
+                  onChange={(e) => {
+                    const enteredValue = e.target.value
+                      .replace(/\D/g, "")
+                      .slice(0, 2);
+                    setAge(enteredValue);
+                  }}
+                  value={age}
+                  required
+                  placeholder="Enter Student Age"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
