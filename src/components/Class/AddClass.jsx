@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { collection, addDoc } from 'firebase/firestore';
+import React, { useState, useEffect } from 'react';
+import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../firebase';
 import DefaultLayout from '../../layout/DefaultLayout';
 import Breadcrumb from '../Breadcrumbs/Breadcrumb';
@@ -12,6 +12,18 @@ const AddClass = () => {
     const [selectedClass, setSelectedClass] = useState('');
     const [subjects, setSubjects] = useState(['']);
     const [isOptionSelected, setIsOptionSelected] = useState(false);
+    const [existingClasses, setExistingClasses] = useState([]);
+
+    useEffect(() => {
+        // Fetch existing classes from Firestore
+        const fetchExistingClasses = async () => {
+            const querySnapshot = await getDocs(collection(db, 'classes'));
+            const classNames = querySnapshot.docs.map(doc => doc.data().className);
+            setExistingClasses(classNames);
+        };
+
+        fetchExistingClasses();
+    }, []);
 
     const handleClassChange = (e) => {
         setSelectedClass(e.target.value);
@@ -39,6 +51,12 @@ const AddClass = () => {
             enqueueSnackbar('Please fill in all fields', { variant: 'warning' });
             return;
         }
+
+        if (existingClasses.includes(selectedClass)) {
+            enqueueSnackbar('This class has already been added', { variant: 'warning' });
+            return;
+        }
+
         setLoading(true);
 
         try {
@@ -48,6 +66,7 @@ const AddClass = () => {
             });
             console.log('Document written with ID: ', docRef.id);
             enqueueSnackbar('Class and subjects added successfully', { variant: 'success' });
+            setExistingClasses([...existingClasses, selectedClass]);
             setSelectedClass('');
             setSubjects(['']);
             setIsOptionSelected(false);
@@ -87,7 +106,12 @@ const AddClass = () => {
                                                 Select your class
                                             </option>
                                             {['Class 1', 'Class 2', 'Class 3', 'Class 4', 'Class 5', 'Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12'].map((classOption) => (
-                                                <option key={classOption} value={classOption} className="text-body dark:text-bodydark">
+                                                <option
+                                                    key={classOption}
+                                                    value={classOption}
+                                                    className="text-body dark:text-bodydark"
+                                                    disabled={existingClasses.includes(classOption)} 
+                                                >
                                                     {classOption}
                                                 </option>
                                             ))}
@@ -127,26 +151,28 @@ const AddClass = () => {
                                                 onChange={(e) => handleSubjectChange(index, e.target.value)}
                                                 className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                             />
-                                            <button
-                                                type="button"
-                                                onClick={() => removeSubjectField(index)}
-                                                className="ml-2 text-red-500"
-                                            >
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                    stroke="currentColor"
-                                                    className="w-6 h-6"
+                                            {index > 0 && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeSubjectField(index)}
+                                                    className="ml-2 text-red-500"
                                                 >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        strokeWidth="2"
-                                                        d="M6 18L18 6M6 6l12 12"
-                                                    />
-                                                </svg>
-                                            </button>
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                        stroke="currentColor"
+                                                        className="w-6 h-6"
+                                                    >
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            strokeWidth="2"
+                                                            d="M6 18L18 6M6 6l12 12"
+                                                        />
+                                                    </svg>
+                                                </button>
+                                            )}
                                             {index === subjects.length - 1 && (
                                                 <button
                                                     type="button"
@@ -174,10 +200,10 @@ const AddClass = () => {
                                 </div>
                                 <button
                                     type="submit"
-                                    className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90"
+                                    className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray"
                                     disabled={loading}
                                 >
-                                    {loading ? <Spinner /> : 'Add Class'}
+                                    {loading ? <Spinner /> : 'Save'}
                                 </button>
                             </div>
                         </form>
