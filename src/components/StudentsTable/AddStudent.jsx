@@ -97,7 +97,7 @@ const AddEmployee = () => {
         return;
       }
 
-      if (bFormNo.length !== 13) {
+      if (bFormNo.length < 13) {
         enqueueSnackbar("B Form number should be 13 digits", {
           variant: "error",
         });
@@ -183,15 +183,12 @@ const AddEmployee = () => {
   };
 
   const formatBFormNo = (value) => {
-    // Remove non-digit characters
     value = value.replace(/\D/g, "");
 
-    // Limit length to 13 characters
     if (value.length > 13) {
       value = value.slice(0, 13);
     }
 
-    // Apply the format: 00000-0000000-0
     if (value.length <= 5) {
       return value;
     } else if (value.length <= 12) {
@@ -432,9 +429,105 @@ const AddEmployee = () => {
               </div> */}
               <div className="mb-4.5 xl:w-1/4">
                 <label className="mb-2.5 block text-black dark:text-white">
-                  Gurdian Relation
+                  {" "}
+                  Gurdian Relation{" "}
                 </label>
-                <input
+
+                <div className="relative z-20 bg-transparent dark:bg-form-input">
+                  <select
+                    onChange={(e) => setRelation(e.target.value)}
+                    value={relation}
+                    required
+                    className={`relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary ${
+                      isOptionSelected ? "text-black dark:text-white" : ""
+                    }`}
+                  >
+                    <option
+                      value=""
+                      disabled
+                      className="text-body dark:text-bodydark"
+                    >
+                      Relations
+                    </option>
+                    <option
+                      value="Khaliqia Government School"
+                      className="text-body dark:text-bodydark"
+                    >
+                      Mother
+                    </option>
+                    <option
+                      value="Khaliqia Government Higher Secondary School"
+                      className="text-body dark:text-bodydark"
+                    >
+                      Brother
+                    </option>
+                    <option
+                      value="Khaliqia Government Higher Secondary School"
+                      className="text-body dark:text-bodydark"
+                    >
+                      Grand Father
+                    </option>
+                    <option
+                      value="Khaliqia Government Higher Secondary School"
+                      className="text-body dark:text-bodydark"
+                    >
+                      Grand Mother
+                    </option>
+                    <option
+                      value="Khaliqia Government Higher Secondary School"
+                      className="text-body dark:text-bodydark"
+                    >
+                      Uncle
+                    </option>
+                    <option
+                      value="Khaliqia Government Higher Secondary School"
+                      className="text-body dark:text-bodydark"
+                    >
+                      Aunt
+                    </option>
+                    <option
+                      value="Khaliqia Government Higher Secondary School"
+                      className="text-body dark:text-bodydark"
+                    >
+                      Cousin
+                    </option>
+                    <option
+                      value="Khaliqia Government Higher Secondary School"
+                      className="text-body dark:text-bodydark"
+                    >
+                      Friend
+                    </option>
+                    <option
+                      value="Khaliqia Government Higher Secondary School"
+                      className="text-body dark:text-bodydark"
+                    >
+                      Other
+                    </option>
+                  </select>
+
+                  <span className="absolute top-1/2 right-4 z-30 -translate-y-1/2">
+                    <svg
+                      className="fill-current"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <g opacity="0.8">
+                        <path
+                          fillRule="evenodd"
+                          clipRule="evenodd"
+                          d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z"
+                          fill=""
+                        ></path>
+                      </g>
+                    </svg>
+                  </span>
+                </div>
+              </div>
+
+              {/* <input
                   type="text"
                   value={relation}
                   onChange={(e) => {
@@ -447,8 +540,7 @@ const AddEmployee = () => {
                   required
                   placeholder="Enter gurdian relation"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                />
-              </div>
+                /> */}
               <div className="mb-4.5 xl:w-1/4">
                 <label className="mb-2.5 block text-black dark:text-white">
                   Gurdian Phone No.
@@ -461,7 +553,7 @@ const AddEmployee = () => {
                   }}
                   value={gurdianPhone}
                   required
-                  placeholder="Enter Phone No."
+                  placeholder="e.g: 0300 0000000"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
@@ -479,7 +571,7 @@ const AddEmployee = () => {
                   }}
                   value={age}
                   required
-                  placeholder="Enter Student Age"
+                  placeholder="e.g: 12"
                   className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
@@ -501,7 +593,7 @@ const AddEmployee = () => {
                     }`}
                   >
                     <option value="" disabled>
-                      Select your class
+                      Classes
                     </option>
                     {classes.length > 0 ? (
                       classes.map((cls, index) => (
@@ -556,7 +648,7 @@ const AddEmployee = () => {
                       disabled
                       className="text-body dark:text-bodydark"
                     >
-                      Select your school
+                      Schools
                     </option>
                     <option
                       value="Khaliqia Government School"
