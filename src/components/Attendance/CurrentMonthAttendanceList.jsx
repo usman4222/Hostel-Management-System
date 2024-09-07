@@ -29,11 +29,7 @@ const CurrentMonthAttendanceList = () => {
   useEffect(() => {
     if (userId) {
       fetchUserData(userId);
-      const unsubscribe = fetchUserAttendance(
-        userId,
-        selectedMonth,
-        selectedYear
-      );
+      const unsubscribe = fetchUserAttendance(userId, selectedMonth, selectedYear);
       return () => unsubscribe();
     }
   }, [userId, selectedMonth, selectedYear]);
@@ -65,11 +61,7 @@ const CurrentMonthAttendanceList = () => {
       (docSnap) => {
         if (docSnap.exists()) {
           const attendanceData = docSnap.data().attendance || [];
-          const filteredAttendance = filterAttendanceByMonth(
-            attendanceData,
-            month,
-            year
-          );
+          const filteredAttendance = filterAttendanceByMonth(attendanceData, month, year);
           setAttendanceArray(filteredAttendance);
         } else {
           setAttendanceArray([]);
@@ -172,8 +164,7 @@ const CurrentMonthAttendanceList = () => {
     }
 
     setOpenDialog(false);
-};
-
+  };
 
   return (
     <DefaultLayout>
@@ -236,7 +227,7 @@ const CurrentMonthAttendanceList = () => {
                           {record.status}
                         </td>
                         <td className="border-b border-[#eee] py-5 px-4 text-black dark:border-strokedark dark:text-white">
-                          {record.reason}
+                          {record.reason || "No Reason"}
                         </td>
                         <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                           <IconButton onClick={() => handleEditClick(record)}>
