@@ -6,7 +6,7 @@ const DelDialogue = ({ onClose, onConfirm, loading = false }) => {
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-800 bg-opacity-50" role="dialog" aria-labelledby="delete-dialog-title" aria-describedby="delete-dialog-description">
             <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
                 <h2 id="delete-dialog-title" className="text-xl font-semibold mb-4 text-black">Delete Confirmation</h2>
-                <p id="delete-dialog-description" className="mb-6 text-gray-600">Are you sure you want to delete this record?</p>
+                <p id="delete-dialog-description" className="mb-6 text-gray-600">  Are you sure you want to Logout?</p>
                 <div className="flex justify-end space-x-2">
                     <button
                         onClick={onClose}
