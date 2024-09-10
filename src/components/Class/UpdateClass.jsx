@@ -53,6 +53,11 @@ const UpdateClass = () => {
         setSubjects([...subjects, '']);
     };
 
+    const removeSubjectField = (index) => {
+        const newSubjects = subjects.filter((_, i) => i !== index);
+        setSubjects(newSubjects);
+    };
+
     const handleUpdateClass = async (e) => {
         e.preventDefault();
         setSubmitLoading(true);
@@ -145,11 +150,33 @@ const UpdateClass = () => {
                                                 onChange={(e) => handleSubjectChange(index, e.target.value)}
                                                 className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                             />
+                                            {index > 0 && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeSubjectField(index)}
+                                                    className="ml-2 text-red-500 transition-all ease-in-out .3s hover:bg-primary hover:text-white hover:rounded-sm"
+                                                >
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                        stroke="currentColor"
+                                                        className="w-6 h-6"
+                                                    >
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            strokeWidth="2"
+                                                            d="M6 18L18 6M6 6l12 12"
+                                                        />
+                                                    </svg>
+                                                </button>
+                                            )}
                                             {index === subjects.length - 1 && (
                                                 <button
                                                     type="button"
                                                     onClick={addSubjectField}
-                                                    className="ml-2 text-primary"
+                                                    className="ml-2 text-primary transition-all ease-in-out .3s hover:bg-primary hover:text-white hover:rounded-sm"
                                                 >
                                                     <svg
                                                         xmlns="http://www.w3.org/2000/svg"
